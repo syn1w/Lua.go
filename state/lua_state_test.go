@@ -25,7 +25,7 @@ func printStack(ls *LuaState) {
 	fmt.Println()
 }
 
-func TestState1(t *testing.T) {
+func TestStateStack(t *testing.T) {
 	ls := NewLuaState()
 	ls.PushBoolean(true)
 	printStack(ls)
@@ -45,4 +45,47 @@ func TestState1(t *testing.T) {
 	printStack(ls)
 	ls.SetTop(-5)
 	printStack(ls)
+}
+
+func TestStateOperator(t *testing.T) {
+	ls := NewLuaState()
+	ls.PushInteger(1)
+	ls.PushString("2.0")
+	ls.PushString("3.0")
+	ls.PushNumber(4.0)
+	printStack(ls) // [1] ["2.0"] ["3.0"] [4.0]
+	ls.Arithmetic(api.LuaOpAdd)
+	printStack(ls) // [1] ["2.0"] [7]
+	if !ls.IsNumber(-1) {
+		t.Error("add error1")
+	}
+	if ls.ToNumber(-1) != 7.0 {
+		t.Error("add error2")
+	}
+	ls.Arithmetic(api.LuaOpBNot)
+	printStack(ls) // [1] ["2.0"] [-8]
+	ls.Len(2)
+	printStack(ls) // [1] ["2.0"] [-8] [3]
+	if !ls.IsNumber(-1) {
+		t.Error("len error1")
+	}
+	if ls.ToNumber(-1) != 3.0 {
+		t.Error("len error2")
+	}
+	ls.Concat(3)
+	printStack(ls) // [1] ["2.0-83"]
+	if !ls.IsString(-1) {
+		t.Error("concat error1")
+	}
+	if ls.ToString(-1) != "2.0-83" {
+		t.Error("concat error2")
+	}
+	ls.PushBoolean(ls.Compare(1, 2, api.LuaOpEq))
+	printStack(ls) // [1] ["2.0-83"] [false]
+	if !ls.IsBoolean(-1) {
+		t.Error("compare error1")
+	}
+	if ls.ToBoolean(-1) != false {
+		t.Error("compare error2")
+	}
 }

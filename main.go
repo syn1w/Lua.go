@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"vczn/luago/api"
 	"vczn/luago/binchunk"
+	"vczn/luago/state"
 	"vczn/luago/vm"
 )
 
@@ -155,6 +157,39 @@ func testChunkDump() {
 }
 
 func main() {
-	//	testChunkDump()
-	state.testState1()
+	ls := state.NewLuaState()
+	ls.PushInteger(1)
+	ls.PushString("2.0")
+	ls.PushString("3.0")
+	ls.PushNumber(4.0)
+	printStack(ls)
+
+	ls.Arithmetic(api.LuaOpAdd)
+	printStack(ls)
+	ls.Arithmetic(api.LuaOpBNot)
+	printStack(ls)
+	ls.Len(2)
+	printStack(ls)
+	ls.Concat(3)
+	printStack(ls)
+	ls.PushBoolean(ls.Compare(1, 2, api.LuaOpEq))
+	printStack(ls)
+}
+
+func printStack(ls *state.LuaState) {
+	top := ls.GetTop()
+	for i := 1; i <= top; i++ {
+		t := ls.Type(i)
+		switch t {
+		case api.LuaTBoolean:
+			fmt.Printf("[%t]", ls.ToBoolean(i))
+		case api.LuaTNumber:
+			fmt.Printf("[%g]", ls.ToNumber(i))
+		case api.LuaTString:
+			fmt.Printf("[%q]", ls.ToString(i))
+		default: // other values
+			fmt.Printf("[%s]", ls.TypeName(t))
+		}
+	}
+	fmt.Println()
 }

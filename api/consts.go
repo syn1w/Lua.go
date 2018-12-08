@@ -13,3 +13,28 @@ const (
 	LuaTUserData
 	LuaTThread
 )
+
+// Lua arithmetic operator
+const (
+	LuaOpAdd  = iota // +
+	LuaOpSub         // -(binary)
+	LuaOpMul         // *
+	LuaOpMod         // %
+	LuaOpPow         // ^
+	LuaOpDiv         // /
+	LuaOpIDiv        // //
+	LuaOpBAnd        // &
+	LuaOpBOr         // |
+	LuaOpBXor        // ~
+	LuaOpBShl        // <<
+	LuaOpBShr        // >>
+	LuaOpUnm         // -(unary)
+	LuaOpBNot        // ~
+)
+
+// Lua compare operator
+const (
+	LuaOpEq = iota // ==
+	LuaOpLt        // <
+	LuaOpLe        // <=
+)
