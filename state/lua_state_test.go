@@ -26,7 +26,7 @@ func printStack(ls *LuaState) {
 }
 
 func TestStateStack(t *testing.T) {
-	ls := NewLuaState()
+	ls := NewLuaState(20, nil)
 	ls.PushBoolean(true)
 	printStack(ls)
 	ls.PushInteger(10)
@@ -48,7 +48,7 @@ func TestStateStack(t *testing.T) {
 }
 
 func TestStateOperator(t *testing.T) {
-	ls := NewLuaState()
+	ls := NewLuaState(20, nil)
 	ls.PushInteger(1)
 	ls.PushString("2.0")
 	ls.PushString("3.0")

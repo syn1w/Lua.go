@@ -1,5 +1,7 @@
 package vm
 
+import "vczn/luago/api"
+
 // Instruction is Lua instruction code
 type Instruction uint32
 
@@ -43,4 +45,14 @@ func (i Instruction) AsBx() (a, sBx int) {
 func (i Instruction) Ax() (ax int) {
 	ax = int(i >> 6)
 	return
+}
+
+// Execute an instruction
+func (i Instruction) Execute(vm api.ILuaVM) {
+	action := opcodes[i.Opcode()].action
+	if action != nil {
+		action(i, vm)
+	} else {
+		panic(i.OpName())
+	}
 }

@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
+	"os"
 	"vczn/luago/api"
 	"vczn/luago/binchunk"
 	"vczn/luago/state"
@@ -156,8 +158,8 @@ func testChunkDump() {
 	list(proto)
 }
 
-func main() {
-	ls := state.NewLuaState()
+func testState() {
+	ls := state.NewLuaState(20, nil)
 	ls.PushInteger(1)
 	ls.PushString("2.0")
 	ls.PushString("3.0")
@@ -192,4 +194,38 @@ func printStack(ls *state.LuaState) {
 		}
 	}
 	fmt.Println()
+}
+
+func luaMain(proto *binchunk.ProtoType) {
+	nRegs := int(proto.MaxStackSize)
+	ls := state.NewLuaState(nRegs+8, proto)
+	ls.SetTop(nRegs)
+	for {
+		pc := ls.PC()
+		inst := vm.Instruction(ls.Fetch())
+		if inst.Opcode() != vm.OpRETURN {
+			inst.Execute(ls)
+			fmt.Printf("[%02d] %s", pc+1, inst.OpName())
+			printStack(ls)
+		} else {
+			break
+		}
+	}
+}
+
+func testVM() {
+	if len(os.Args) != 2 {
+		log.Fatal("Usage main <luac.out> ")
+	}
+	data, err := ioutil.ReadFile(os.Args[1])
+	if err != nil {
+		panic(err)
+	}
+
+	proto := binchunk.Undump(data)
+	luaMain(proto)
+}
+
+func main() {
+	testVM()
 }
