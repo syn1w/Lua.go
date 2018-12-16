@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
-	"os"
 	"vczn/luago/api"
 	"vczn/luago/binchunk"
 	"vczn/luago/state"
@@ -214,10 +212,10 @@ func luaMain(proto *binchunk.ProtoType) {
 }
 
 func testVM() {
-	if len(os.Args) != 2 {
-		log.Fatal("Usage main <luac.out> ")
-	}
-	data, err := ioutil.ReadFile(os.Args[1])
+	// if len(os.Args) != 2 {
+	// 	log.Fatal("Usage main <luac.out> ")
+	// }
+	data, err := ioutil.ReadFile("table.out")
 	if err != nil {
 		panic(err)
 	}

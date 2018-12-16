@@ -72,15 +72,14 @@ func (t *LuaTable) put(key, val LuaValue) {
 			}
 			return
 		}
-
-		if val != nil {
-			if t.m == nil {
-				t.m = make(map[LuaValue]LuaValue)
-				t.m[key] = val
-			}
-		} else {
-			delete(t.m, key)
+	}
+	if val != nil {
+		if t.m == nil {
+			t.m = make(map[LuaValue]LuaValue)
+			t.m[key] = val
 		}
+	} else {
+		delete(t.m, key)
 	}
 }
 
@@ -106,5 +105,5 @@ func (t *LuaTable) expandArray() {
 }
 
 func (t *LuaTable) len() int {
-	return len(t.arr)
+	return len(t.arr) // map?
 }
