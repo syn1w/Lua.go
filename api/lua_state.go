@@ -64,4 +64,18 @@ type ILuaState interface {
 	Compare(idx1, idx2 int, op CompareOp) bool
 	Len(idx int)
 	Concat(n int)
+
+	// table function
+	NewTable()
+	CreateTable(nArr, nRecord int)
+
+	// table get function
+	GetTable(idx int) LuaType
+	GetField(idx int, k string) LuaType
+	GetI(idx int, i int64) LuaType
+
+	// table set function
+	SetTable(idx int)
+	SetField(idx int, k string)
+	SetI(idx int, n int64)
 }

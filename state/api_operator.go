@@ -210,6 +210,8 @@ func (s *LuaState) Len(idx int) {
 	val := s.stack.get(idx)
 	if str, ok := val.(string); ok {
 		s.stack.push(int64(len(str)))
+	} else if t, ok := val.(*LuaTable); ok {
+		s.stack.push(int64(t.len()))
 	} else {
 		panic("length method error")
 	}
