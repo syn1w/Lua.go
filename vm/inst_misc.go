@@ -5,7 +5,7 @@ import "vczn/luago/api"
 // move A B | R(A) := R(B)
 func move(i Instruction, vm api.ILuaVM) {
 	a, b, _ := i.ABC()
-	a++ // 寄存器索引从 0 开始，栈索引从 1 开始
+	a++ // registers index begin with 0, stack index begin with 1
 	b++
 	vm.Copy(b, a)
 }

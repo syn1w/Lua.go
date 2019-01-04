@@ -8,8 +8,8 @@ import (
 // arithmetic operator
 // +, -(u), -(b), *, /, //(IDIV), %, ^
 
-// 除法和乘方运算先转换为浮点数，再进行运算，计算结果也是浮点数
-// 其他先判断操作数是否都为整数，如果是，进行整数运算；否则，转换为浮点数。
+// 除法和乘方运算先转换为 floating point，再进行运算，计算结果也是 floating point
+// 其他先判断操作数是否都为整数，如果是，进行整数运算；否则，转换为 floating point
 // 乘方运算为右结合，比如 4^3^2 == 4^(3^2)
 
 // IFloorDiv is integer floor division
@@ -39,14 +39,14 @@ func FMod(a, b float64) float64 {
 // bitwise operator(lua 5.3)
 // & | ~(一元取反，二元异或) << >>
 // Lua5.1 used bit.xxx(); Lua5.2 used bit32; Lua5.3 used builtin operators
-// 位运算先把操作数转化为整数再进行运算，计算结果也为整数
+// 位运算先把操作数转化为整数再进行运算，计算结果也为 integer
 
 // ShiftLeft is a << n
 func ShiftLeft(a, n int64) int64 {
 	if n >= 0 {
 		return a << uint64(n)
 	}
-	return ShiftRight(a, -n) // n < 0 向相反方向移动 n 个比特
+	return ShiftRight(a, -n) // n < 0 向相反方向移动 n bytes
 }
 
 // ShiftRight is a >> n

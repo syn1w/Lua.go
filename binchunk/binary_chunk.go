@@ -8,7 +8,7 @@ type binaryChunk struct {
 
 // xxd ./luac.out 查看 header
 
-// windows 下的 header 格式不一样，下面大多数是 Linux Lua 5.3 的输出
+// windows 下的 header 格式不一样，下面使用 Linux Lua 5.3
 type header struct {
 	signature       [4]byte // magic number: ESC, L, u, a -> 0x1B4C7561 -> "\x1bLua"
 	version         byte    // 5.3.4 -> 0x53
@@ -19,22 +19,22 @@ type header struct {
 	instructionSize byte    // 04
 	luaIntegerSize  byte    // 08
 	luaNumberSize   byte    // 08
-	luacInt         int64   // 78 56 00 00 00 00 00 00 -> 5678 小端
+	luacInt         int64   // 78 56 00 00 00 00 00 00 -> 5678 little endian
 	luacNum         float64 // 00 00 00 00 00 28 77 40 -> IEEE 754 float64 370.5
 }
 
-// ProtoType 函数原型：函数的基本信息、指令表、常量表、upvalue 表、子函数原型、调试信息
+// ProtoType 函数原型：函数的基本信息、指令表、常量表、upvalue 表、子函数原型、调试信息, ...
 type ProtoType struct {
 	Source          string        // source file name
 	LineDefined     uint32        // 起始行 main == 0, other > 0
-	LastLineDefined uint32        // 终止行
+	LastLineDefined uint32        // last line
 	NumParams       byte          // 固定参数个数 main == 0
 	IsVararg        byte          // 2: declared vararg; 1: uses vararg; 0 not vararg
-	MaxStackSize    byte          // 需要的寄存器数量
-	Code            []uint32      // 指令列表，每条指令 4 字节
+	MaxStackSize    byte          // number of stacks
+	Code            []uint32      // 指令列表，每条指令 4 bytes
 	Constants       []interface{} // 常量表，字面量 nil, boolean, number, integer, string
-	Upvalues        []Upvalue     // upvalues table, 每个元素占两个字节
-	Protos          []*ProtoType  // sub funtion 原型表
+	Upvalues        []Upvalue     // upvalues table, 2 bytes per element
+	Protos          []*ProtoType  // sub funtion proto table
 	LineInfo        []uint32
 	LocVars         []LocVar
 	UpvalueNames    []string
@@ -96,10 +96,10 @@ type Upvalue struct {
 }
 
 // Protos
-// 00 00 表示无子函数
+// 00 00 表示无 subfunction
 
 // lineInfo
-// 行号和指令表中的指令一一对应，分别记录每条在源代码中对应的行号
+// 行号和指令表中的指令一一对应，分别记录每条在源代码中对应的 lineno
 // 01 00 00 00 -> line 1, 00 00 04 00 00 00
 // 01 00 00 00 -> line 1
 // 01 00 00 00 -> line 1
@@ -119,7 +119,7 @@ type LocVar struct {
 // Undump is for parsing binary chunk file to generate *ProtoType info
 func Undump(data []byte) *ProtoType {
 	reader := &Reader{data}
-	reader.checkHeader() // 校验头
-	reader.readByte()    // 跳过 Upvalue 数量
+	reader.checkHeader() // check header
+	reader.readByte()    // 跳过 Upvalue numbers
 	return reader.readProto("")
 }
