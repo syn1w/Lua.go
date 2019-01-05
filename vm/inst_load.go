@@ -3,8 +3,8 @@ package vm
 import "vczn/luago/api"
 
 // loadnil A B | R(A), R(A+1), ..., R(A+B) := nil
-func loadNil(i Instruction, vm api.ILuaVM) {
-	a, b, _ := i.ABC()
+func loadNil(inst Instruction, vm api.ILuaVM) {
+	a, b, _ := inst.ABC()
 	a++
 	vm.PushNil()
 	for i := a; i <= a+b; i++ {
@@ -14,8 +14,8 @@ func loadNil(i Instruction, vm api.ILuaVM) {
 }
 
 // loadbool A B C | R(A) := (bool)B; if (C) pc++
-func loadBool(i Instruction, vm api.ILuaVM) {
-	a, b, c := i.ABC()
+func loadBool(inst Instruction, vm api.ILuaVM) {
+	a, b, c := inst.ABC()
 	a++
 	vm.PushBoolean(b != 0)
 	vm.Replace(a)
@@ -25,16 +25,16 @@ func loadBool(i Instruction, vm api.ILuaVM) {
 }
 
 // loadk A, Bx | R(A) := Kst(Bx)
-func loadk(i Instruction, vm api.ILuaVM) {
-	a, bx := i.ABx()
+func loadk(inst Instruction, vm api.ILuaVM) {
+	a, bx := inst.ABx()
 	a++
 	vm.GetConst(bx)
 	vm.Replace(a)
 }
 
-// loadkx A, R(A) := Kst(extra arg)
-func loadkx(i Instruction, vm api.ILuaVM) {
-	a, _ := i.ABx()
+// loadkx A | R(A) := Kst(extra arg)
+func loadkx(inst Instruction, vm api.ILuaVM) {
+	a, _ := inst.ABx()
 	a++
 	ax := Instruction(vm.Fetch()).Ax()
 	vm.GetConst(ax)

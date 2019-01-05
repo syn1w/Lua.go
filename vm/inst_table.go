@@ -3,8 +3,8 @@ package vm
 import "vczn/luago/api"
 
 // R(A) := {} (size = B, C)
-func newTable(i Instruction, vm api.ILuaVM) {
-	a, b, c := i.ABC()
+func newTable(inst Instruction, vm api.ILuaVM) {
+	a, b, c := inst.ABC()
 	a++
 	// b 和 c 最多只有 9 位，最大值是 511，为了防止初始容量不够导致的频繁扩容，使用 Float Point Byte
 	// 编码方式，来扩大 b 和 c 的表示 range
@@ -14,8 +14,8 @@ func newTable(i Instruction, vm api.ILuaVM) {
 }
 
 // R(A) := R(B)[RK(C)]
-func getTable(i Instruction, vm api.ILuaVM) {
-	a, b, c := i.ABC()
+func getTable(inst Instruction, vm api.ILuaVM) {
+	a, b, c := inst.ABC()
 	a++
 	b++
 	vm.GetRK(c)
@@ -24,8 +24,8 @@ func getTable(i Instruction, vm api.ILuaVM) {
 }
 
 // R(A)[RK(B)] := RK(C)
-func setTable(i Instruction, vm api.ILuaVM) {
-	a, b, c := i.ABC()
+func setTable(inst Instruction, vm api.ILuaVM) {
+	a, b, c := inst.ABC()
 	a++
 	vm.GetRK(b) // key
 	vm.GetRK(c) // value
@@ -35,12 +35,12 @@ func setTable(i Instruction, vm api.ILuaVM) {
 const lFieldsPerFlush = 50
 
 // R(A)[(C-1)*FPF+i] := R(A+i), 1 <= i <= B
-func setList(i Instruction, vm api.ILuaVM) {
+func setList(inst Instruction, vm api.ILuaVM) {
 	// c 9 bits, 最多直接表示 512 个数组索引，显然不够用，所以分批次来操作，FPF 为 Fields Per Flush
 	// 也就是每批次最多处理的元素数量，所以 SETLIST 指令最多可以操作 FPF*512 个 elements
 	// 如果还有更多元素，使用 EXTRAARG instruction
 
-	a, b, c := i.ABC()
+	a, b, c := inst.ABC()
 	a++
 
 	if c > 0 {

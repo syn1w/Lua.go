@@ -2,13 +2,13 @@ package vm
 
 import "vczn/luago/api"
 
-// for numerical
+// forloop A sBx | for numerical
 // for index, limit, step ...
 // R(A)+=R(A+2)
 // if R(A) <= R(A+1) { pc+=sBx; R(A+3)=R(A) }
 // R(A) index, R(A+1) limit, R(A+2) step, R(A+3) i
-func luaForLoop(i Instruction, vm api.ILuaVM) {
-	a, sBx := i.AsBx()
+func luaForLoop(inst Instruction, vm api.ILuaVM) {
+	a, sBx := inst.AsBx()
 	a++
 	// R(A)+=R(A+2)
 	vm.PushValue(a + 2)
@@ -24,9 +24,10 @@ func luaForLoop(i Instruction, vm api.ILuaVM) {
 	}
 }
 
+// forprep A sBx
 // R(A)-=R(A+2); PC+=sBx
-func luaForPrep(i Instruction, vm api.ILuaVM) {
-	a, sBx := i.AsBx()
+func luaForPrep(inst Instruction, vm api.ILuaVM) {
+	a, sBx := inst.AsBx()
 	a++
 	// R(A)-=R(A+2) <=> index -= step
 	vm.PushValue(a)

@@ -3,8 +3,8 @@ package vm
 import "vczn/luago/api"
 
 // R(A) := RK(B) op RK(C)
-func binaryArith(i Instruction, vm api.ILuaVM, op api.ArithmeticOp) {
-	a, b, c := i.ABC()
+func binaryArith(inst Instruction, vm api.ILuaVM, op api.ArithmeticOp) {
+	a, b, c := inst.ABC()
 	a++
 	vm.GetRK(b)
 	vm.GetRK(c)
@@ -13,8 +13,8 @@ func binaryArith(i Instruction, vm api.ILuaVM, op api.ArithmeticOp) {
 }
 
 // R(A) := op R(B)
-func unaryArith(i Instruction, vm api.ILuaVM, op api.ArithmeticOp) {
-	a, b, _ := i.ABC()
+func unaryArith(inst Instruction, vm api.ILuaVM, op api.ArithmeticOp) {
+	a, b, _ := inst.ABC()
 	a++
 	b++
 	vm.PushValue(b)
@@ -22,66 +22,66 @@ func unaryArith(i Instruction, vm api.ILuaVM, op api.ArithmeticOp) {
 	vm.Replace(a)
 }
 
-func add(i Instruction, vm api.ILuaVM) { // +
-	binaryArith(i, vm, api.LuaOpAdd)
+func add(inst Instruction, vm api.ILuaVM) { // +
+	binaryArith(inst, vm, api.LuaOpAdd)
 }
 
-func sub(i Instruction, vm api.ILuaVM) { // -
-	binaryArith(i, vm, api.LuaOpSub)
+func sub(inst Instruction, vm api.ILuaVM) { // -
+	binaryArith(inst, vm, api.LuaOpSub)
 }
 
-func mul(i Instruction, vm api.ILuaVM) { // *
-	binaryArith(i, vm, api.LuaOpMul)
+func mul(inst Instruction, vm api.ILuaVM) { // *
+	binaryArith(inst, vm, api.LuaOpMul)
 }
 
-func mod(i Instruction, vm api.ILuaVM) { // %
-	binaryArith(i, vm, api.LuaOpMod)
+func mod(inst Instruction, vm api.ILuaVM) { // %
+	binaryArith(inst, vm, api.LuaOpMod)
 }
 
-func pow(i Instruction, vm api.ILuaVM) { // ^
-	binaryArith(i, vm, api.LuaOpPow)
+func pow(inst Instruction, vm api.ILuaVM) { // ^
+	binaryArith(inst, vm, api.LuaOpPow)
 }
 
-func div(i Instruction, vm api.ILuaVM) { // /
-	binaryArith(i, vm, api.LuaOpDiv)
+func div(inst Instruction, vm api.ILuaVM) { // /
+	binaryArith(inst, vm, api.LuaOpDiv)
 }
 
-func idiv(i Instruction, vm api.ILuaVM) { // //
-	binaryArith(i, vm, api.LuaOpIDiv)
+func idiv(inst Instruction, vm api.ILuaVM) { // //
+	binaryArith(inst, vm, api.LuaOpIDiv)
 }
 
-func bAnd(i Instruction, vm api.ILuaVM) { // &
-	binaryArith(i, vm, api.LuaOpBAnd)
+func bAnd(inst Instruction, vm api.ILuaVM) { // &
+	binaryArith(inst, vm, api.LuaOpBAnd)
 }
 
-func bOr(i Instruction, vm api.ILuaVM) { // |
-	binaryArith(i, vm, api.LuaOpBOr)
+func bOr(inst Instruction, vm api.ILuaVM) { // |
+	binaryArith(inst, vm, api.LuaOpBOr)
 }
 
-func bXor(i Instruction, vm api.ILuaVM) { // ~
-	binaryArith(i, vm, api.LuaOpBXor)
+func bXor(inst Instruction, vm api.ILuaVM) { // ~
+	binaryArith(inst, vm, api.LuaOpBXor)
 }
 
-func shl(i Instruction, vm api.ILuaVM) { // <<
-	binaryArith(i, vm, api.LuaOpBShl)
+func shl(inst Instruction, vm api.ILuaVM) { // <<
+	binaryArith(inst, vm, api.LuaOpBShl)
 }
 
-func shr(i Instruction, vm api.ILuaVM) { // >>
-	binaryArith(i, vm, api.LuaOpBShr)
+func shr(inst Instruction, vm api.ILuaVM) { // >>
+	binaryArith(inst, vm, api.LuaOpBShr)
 }
 
-func unm(i Instruction, vm api.ILuaVM) { // -
-	unaryArith(i, vm, api.LuaOpUnm)
+func unm(inst Instruction, vm api.ILuaVM) { // -
+	unaryArith(inst, vm, api.LuaOpUnm)
 }
 
-func bNot(i Instruction, vm api.ILuaVM) { // ~
-	unaryArith(i, vm, api.LuaOpBNot)
+func bNot(inst Instruction, vm api.ILuaVM) { // ~
+	unaryArith(inst, vm, api.LuaOpBNot)
 }
 
 // \#
 // R(A) := len(R(B))
-func luaLen(i Instruction, vm api.ILuaVM) {
-	a, b, _ := i.ABC()
+func luaLen(inst Instruction, vm api.ILuaVM) {
+	a, b, _ := inst.ABC()
 	a++
 	b++
 	vm.Len(b)
@@ -90,8 +90,8 @@ func luaLen(i Instruction, vm api.ILuaVM) {
 
 // ..
 // R(A) := R(B).. ... ..R(C)
-func luaConcat(i Instruction, vm api.ILuaVM) {
-	a, b, c := i.ABC()
+func luaConcat(inst Instruction, vm api.ILuaVM) {
+	a, b, c := inst.ABC()
 	a++
 	b++
 	c++
@@ -105,8 +105,8 @@ func luaConcat(i Instruction, vm api.ILuaVM) {
 }
 
 // if (RK(B) op RK(C) ~= A) then pc++
-func luaCompare(i Instruction, vm api.ILuaVM, op api.CompareOp) {
-	a, b, c := i.ABC()
+func luaCompare(inst Instruction, vm api.ILuaVM, op api.CompareOp) {
+	a, b, c := inst.ABC()
 	vm.GetRK(b)
 	vm.GetRK(c)
 	if vm.Compare(-2, -1, op) != (a != 0) {
@@ -115,21 +115,21 @@ func luaCompare(i Instruction, vm api.ILuaVM, op api.CompareOp) {
 	vm.Pop(2)
 }
 
-func luaEq(i Instruction, vm api.ILuaVM) { // ==
-	luaCompare(i, vm, api.LuaOpEq)
+func luaEq(inst Instruction, vm api.ILuaVM) { // ==
+	luaCompare(inst, vm, api.LuaOpEq)
 }
 
-func luaLt(i Instruction, vm api.ILuaVM) { // <
-	luaCompare(i, vm, api.LuaOpLt)
+func luaLt(inst Instruction, vm api.ILuaVM) { // <
+	luaCompare(inst, vm, api.LuaOpLt)
 }
 
-func luaLe(i Instruction, vm api.ILuaVM) { // <=
-	luaCompare(i, vm, api.LuaOpLe)
+func luaLe(inst Instruction, vm api.ILuaVM) { // <=
+	luaCompare(inst, vm, api.LuaOpLe)
 }
 
 // R(A) := not R(B)
-func luaNot(i Instruction, vm api.ILuaVM) {
-	a, b, _ := i.ABC()
+func luaNot(inst Instruction, vm api.ILuaVM) {
+	a, b, _ := inst.ABC()
 	a++
 	b++
 	vm.PushBoolean(!vm.ToBoolean(b))
@@ -137,8 +137,8 @@ func luaNot(i Instruction, vm api.ILuaVM) {
 }
 
 // if ((R(B) == C)) R(A) := R(B) else pc++. C 0 and, C 1 or
-func luaTestset(i Instruction, vm api.ILuaVM) {
-	a, b, c := i.ABC()
+func luaTestset(inst Instruction, vm api.ILuaVM) {
+	a, b, c := inst.ABC()
 	a++
 	b++
 	if vm.ToBoolean(b) == (c != 0) {
@@ -149,8 +149,8 @@ func luaTestset(i Instruction, vm api.ILuaVM) {
 }
 
 // if not (R(A) == C) then pc++
-func luaTest(i Instruction, vm api.ILuaVM) {
-	a, _, c := i.ABC()
+func luaTest(inst Instruction, vm api.ILuaVM) {
+	a, _, c := inst.ABC()
 	a++
 	if vm.ToBoolean(a) != (c != 0) {
 		vm.AddPC(1)
