@@ -69,10 +69,11 @@ const (
 // 02        MaxStackSize
 
 // Code
-// TODO
-//                                04 00 00 00 06 00 40 00 41         ......@.A
-// 00000040: 40 00 00 24 40 00 01 26 00 80 00 02 00 00 00 04  @..$@..&........
-// 00000050: 06 70 72 69 6e 74 04 06                          .print..
+// 04 00 00 00  number of codes
+// 06 00 40 00 [1]
+// 41 40 00 00 [2]
+// 24 40 00 01 [3]
+// 26 00 80 00 [4]
 
 // constants table
 const (
@@ -84,10 +85,13 @@ const (
 	tagLongString  = 0x14
 )
 
-// 68 65 6c 6c 6f "hello"
+// 02 00 00 00 number of constants
+// 04 06 70 72 69 6e 74 short string, "print"
+// 04 06 68 65 6c 6c 6f short string, "hello"
 
 // upvalues table
-// 01 00
+// 01 00 00 00 number of upvalues
+// upvalue1 { instack: 0x01, idx: 0x00}
 
 // Upvalue type
 type Upvalue struct {
@@ -96,25 +100,30 @@ type Upvalue struct {
 }
 
 // Protos
-// 00 00 表示无 subfunction
+// 00 00 00 00   number of prototypes(subfunction)
 
 // lineInfo
 // 行号和指令表中的指令一一对应，分别记录每条在源代码中对应的 lineno
+// 04 00 00 00    number of lineinfos
 // 01 00 00 00 -> line 1, 00 00 04 00 00 00
 // 01 00 00 00 -> line 1
 // 01 00 00 00 -> line 1
 // 01 00 00 00 -> line 1
 
 // LocVar is local variables struct
-// 01 00 00 00 00 00 00 00 01 00 00 00 80 00 00 00 05
 type LocVar struct {
 	VarName string
 	StartPC uint32
 	EndPC   uint32
 }
 
+// 00 00 00 00   number of LocVar
+
+//  80 00 00 00 05
+
 // UpvalueNames
-// 5f 45 4e 56 _ENV
+// 01 00 00 00 number of upvalue names
+// 05 5f 45 4e 56 short string, "_ENV"
 
 // Undump is for parsing binary chunk file to generate *ProtoType info
 func Undump(data []byte) *ProtoType {
