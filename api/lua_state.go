@@ -78,4 +78,8 @@ type ILuaState interface {
 	SetTable(idx int)
 	SetField(idx int, k string)
 	SetI(idx int, n int64)
+
+	// function call
+	Load(chunk []byte, chunkName, mode string) int // mode: b(binary), t(text file), bt
+	Call(nArgs, nResults int)
 }

@@ -33,7 +33,7 @@ func (s *LuaState) Copy(fromIdx, toIdx int) {
 	s.stack.set(toIdx, val)
 }
 
-// PushValue pushs the element with idx
+// PushValue pushes the element with idx
 func (s *LuaState) PushValue(idx int) {
 	val := s.stack.get(idx)
 	s.stack.push(val)

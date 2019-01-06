@@ -30,7 +30,7 @@ type ProtoType struct {
 	LastLineDefined uint32        // last line
 	NumParams       byte          // 固定参数个数 main == 0
 	IsVararg        byte          // 2: declared vararg; 1: uses vararg; 0 not vararg
-	MaxStackSize    byte          // number of stacks
+	MaxStackSize    byte          // size of stacks(registers)
 	Code            []uint32      // 指令列表，每条指令 4 bytes
 	Constants       []interface{} // 常量表，字面量 nil, boolean, number, integer, string
 	Upvalues        []Upvalue     // upvalues table, 2 bytes per element

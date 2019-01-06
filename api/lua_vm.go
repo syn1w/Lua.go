@@ -8,4 +8,8 @@ type ILuaVM interface {
 	Fetch() uint32 // fetch current instruction, pc=pc+1
 	GetConst(idx int)
 	GetRK(rk int)
+
+	RegisterCount() int
+	LoadVararg(n int)
+	LoadProto(idx int)
 }

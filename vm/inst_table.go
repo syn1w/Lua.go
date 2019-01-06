@@ -49,10 +49,28 @@ func setList(inst Instruction, vm api.ILuaVM) {
 		c = Instruction(vm.Fetch()).Ax() // ExtraArg
 	}
 
+	// if b == 0 then setlist with elements in stack top
+	bIsZero := b == 0
+	if bIsZero {
+		b = int(vm.ToInteger(-1)) - a - 1
+		vm.Pop(1)
+	}
+	vm.CheckStack(1)
 	idx := int64(c * lFieldsPerFlush)
 	for i := 1; i <= b; i++ {
 		idx++
 		vm.PushValue(a + i)
 		vm.SetI(a, idx)
+	}
+
+	if bIsZero {
+		for i := vm.RegisterCount() + 1; i <= vm.GetTop(); i++ {
+			idx++
+			vm.PushValue(i)
+			vm.SetI(a, idx)
+		}
+
+		// clear stack
+		vm.SetTop(vm.RegisterCount())
 	}
 }

@@ -22,6 +22,8 @@ func typeOf(val LuaValue) api.LuaType {
 		return api.LuaTString
 	case *LuaTable:
 		return api.LuaTTable
+	case *luaClosure:
+		return api.LuaTFunction
 	default:
 		panic("TODO")
 	}

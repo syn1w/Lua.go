@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"vczn/luago/api"
 	"vczn/luago/binchunk"
 	"vczn/luago/state"
 	"vczn/luago/vm"
@@ -143,87 +142,98 @@ func printDetail(proto *binchunk.ProtoType) {
 	}
 }
 
-func testChunkDump() {
-	// if len(os.Args) < 2 {
-	// 	log.Fatalln("Usage binchunk <outfiles...>")
-	// }
-	// data, err := ioutil.ReadFile(os.Args[1])
-	data, err := ioutil.ReadFile("luac.out")
+// func testChunkDump() {
+// 	// if len(os.Args) < 2 {
+// 	// 	log.Fatalln("Usage binchunk <outfiles...>")
+// 	// }
+// 	// data, err := ioutil.ReadFile(os.Args[1])
+// 	data, err := ioutil.ReadFile("luac.out")
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	proto := binchunk.Undump(data)
+// 	list(proto)
+// }
+
+// func testState() {
+// 	ls := state.NewLuaState(20, nil)
+// 	ls.PushInteger(1)
+// 	ls.PushString("2.0")
+// 	ls.PushString("3.0")
+// 	ls.PushNumber(4.0)
+// 	printStack(ls)
+
+// 	ls.Arithmetic(api.LuaOpAdd)
+// 	printStack(ls)
+// 	ls.Arithmetic(api.LuaOpBNot)
+// 	printStack(ls)
+// 	ls.Len(2)
+// 	printStack(ls)
+// 	ls.Concat(3)
+// 	printStack(ls)
+// 	ls.PushBoolean(ls.Compare(1, 2, api.LuaOpEq))
+// 	printStack(ls)
+// }
+
+// func printStack(ls *state.LuaState) {
+// 	top := ls.GetTop()
+// 	for i := 1; i <= top; i++ {
+// 		t := ls.Type(i)
+// 		switch t {
+// 		case api.LuaTBoolean:
+// 			fmt.Printf("[%t]", ls.ToBoolean(i))
+// 		case api.LuaTNumber:
+// 			fmt.Printf("[%g]", ls.ToNumber(i))
+// 		case api.LuaTString:
+// 			fmt.Printf("[%q]", ls.ToString(i))
+// 		default: // other values
+// 			fmt.Printf("[%s]", ls.TypeName(t))
+// 		}
+// 	}
+// 	fmt.Println()
+// }
+
+// func luaMain(proto *binchunk.ProtoType) {
+// 	nRegs := int(proto.MaxStackSize)
+// 	ls := state.NewLuaState()
+// 	ls.SetTop(nRegs)
+// 	for {
+// 		pc := ls.PC()
+// 		inst := vm.Instruction(ls.Fetch())
+// 		if inst.Opcode() != vm.OpRETURN {
+// 			inst.Execute(ls)
+// 			fmt.Printf("[%02d] %s", pc+1, inst.OpName())
+// 			printStack(ls)
+// 		} else {
+// 			break
+// 		}
+// 	}
+// }
+
+// func testVM() {
+// 	// if len(os.Args) != 2 {
+// 	// 	log.Fatal("Usage main <luac.out> ")
+// 	// }
+// 	data, err := ioutil.ReadFile("table.out")
+// 	if err != nil {
+// 		panic(err)
+// 	}
+
+// 	proto := binchunk.Undump(data)
+// 	luaMain(proto)
+// }
+
+func testFunction() {
+	data, err := ioutil.ReadFile("func1.out")
 	if err != nil {
 		panic(err)
 	}
-	proto := binchunk.Undump(data)
-	list(proto)
-}
-
-func testState() {
-	ls := state.NewLuaState(20, nil)
-	ls.PushInteger(1)
-	ls.PushString("2.0")
-	ls.PushString("3.0")
-	ls.PushNumber(4.0)
-	printStack(ls)
-
-	ls.Arithmetic(api.LuaOpAdd)
-	printStack(ls)
-	ls.Arithmetic(api.LuaOpBNot)
-	printStack(ls)
-	ls.Len(2)
-	printStack(ls)
-	ls.Concat(3)
-	printStack(ls)
-	ls.PushBoolean(ls.Compare(1, 2, api.LuaOpEq))
-	printStack(ls)
-}
-
-func printStack(ls *state.LuaState) {
-	top := ls.GetTop()
-	for i := 1; i <= top; i++ {
-		t := ls.Type(i)
-		switch t {
-		case api.LuaTBoolean:
-			fmt.Printf("[%t]", ls.ToBoolean(i))
-		case api.LuaTNumber:
-			fmt.Printf("[%g]", ls.ToNumber(i))
-		case api.LuaTString:
-			fmt.Printf("[%q]", ls.ToString(i))
-		default: // other values
-			fmt.Printf("[%s]", ls.TypeName(t))
-		}
-	}
-	fmt.Println()
-}
-
-func luaMain(proto *binchunk.ProtoType) {
-	nRegs := int(proto.MaxStackSize)
-	ls := state.NewLuaState(nRegs+8, proto)
-	ls.SetTop(nRegs)
-	for {
-		pc := ls.PC()
-		inst := vm.Instruction(ls.Fetch())
-		if inst.Opcode() != vm.OpRETURN {
-			inst.Execute(ls)
-			fmt.Printf("[%02d] %s", pc+1, inst.OpName())
-			printStack(ls)
-		} else {
-			break
-		}
-	}
-}
-
-func testVM() {
-	// if len(os.Args) != 2 {
-	// 	log.Fatal("Usage main <luac.out> ")
-	// }
-	data, err := ioutil.ReadFile("table.out")
-	if err != nil {
-		panic(err)
-	}
-
-	proto := binchunk.Undump(data)
-	luaMain(proto)
+	ls := state.NewLuaState()
+	ls.Load(data, "table", "b")
+	ls.Call(0, 0)
 }
 
 func main() {
-	testVM()
+	// testVM()
+	testFunction()
 }

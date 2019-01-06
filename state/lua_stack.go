@@ -13,8 +13,17 @@ package state
 
 // LuaStack is the Lua stack struct
 type LuaStack struct {
+	// virtual stack
 	slots []LuaValue
 	top   int
+
+	// call info
+	closure *luaClosure
+	varargs []LuaValue
+	pc      int
+
+	// linked list
+	prev *LuaStack
 }
 
 func newLuaStack(size int) *LuaStack {
@@ -51,6 +60,21 @@ func (s *LuaStack) push(val LuaValue) {
 	s.top++
 }
 
+func (s *LuaStack) pushN(vals []LuaValue, n int) {
+	nVals := len(vals)
+	if n < 0 {
+		n = nVals
+	}
+
+	for i := 0; i < n; i++ {
+		if i < nVals {
+			s.push(vals[i])
+		} else {
+			s.push(nil)
+		}
+	}
+}
+
 func (s *LuaStack) pop() LuaValue {
 	if s.top < 1 {
 		panic("stack underflow")
@@ -59,6 +83,15 @@ func (s *LuaStack) pop() LuaValue {
 	val := s.slots[s.top]
 	s.slots[s.top] = nil
 	return val
+}
+
+func (s *LuaStack) popN(n int) []LuaValue {
+	vals := make([]LuaValue, n)
+	for i := n - 1; i >= 0; i-- {
+		vals[i] = s.pop()
+	}
+
+	return vals
 }
 
 func (s *LuaStack) absIndex(idx int) int {
