@@ -3,7 +3,7 @@ package state
 import "testing"
 
 func TestStack1(t *testing.T) {
-	stack := newLuaStack(10)
+	stack := newLuaStack(10, nil)
 
 	if !stack.empty() {
 		t.Error("1 stack is not emtpy, newLuaStack error")
@@ -27,7 +27,7 @@ func TestStack1(t *testing.T) {
 }
 
 func TestStack2(t *testing.T) {
-	stack := newLuaStack(10)
+	stack := newLuaStack(10, nil)
 	for i := 0; i < 10; i++ {
 		stack.push(i)
 	}

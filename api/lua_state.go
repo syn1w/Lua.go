@@ -82,4 +82,18 @@ type ILuaState interface {
 	// function call
 	Load(chunk []byte, chunkName, mode string) int // mode: b(binary), t(text file), bt
 	Call(nArgs, nResults int)
+
+	// Go function
+	PushGoFunction(f GoFunction)
+	IsGoFunction(idx int) bool
+	ToGoFunction(idx int) GoFunction
+
+	// global table
+	PushGlobalTable()
+	GetGlobal(name string) LuaType
+	SetGlobal(name string)
+	Register(name string, f GoFunction)
 }
+
+// GoFunction is called by lua
+type GoFunction func(ILuaState) int

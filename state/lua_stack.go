@@ -1,5 +1,9 @@
 package state
 
+import (
+	"vczn/luago/api"
+)
+
 //     +-------+
 //     |       | 6 invalid  5  <-top
 // -1  |   e   | 5          4
@@ -24,12 +28,16 @@ type LuaStack struct {
 
 	// linked list
 	prev *LuaStack
+
+	// state
+	state *LuaState
 }
 
-func newLuaStack(size int) *LuaStack {
+func newLuaStack(size int, luastate *LuaState) *LuaStack {
 	return &LuaStack{
 		slots: make([]LuaValue, size),
 		top:   0,
+		state: luastate,
 	}
 }
 
@@ -95,6 +103,10 @@ func (s *LuaStack) popN(n int) []LuaValue {
 }
 
 func (s *LuaStack) absIndex(idx int) int {
+	if idx <= api.LuaRegistryIndex { // pseudo index
+		return idx
+	}
+
 	if idx >= 0 {
 		return idx
 	}
@@ -106,11 +118,19 @@ func (s *LuaStack) absIdxIsValid(absIdx int) bool {
 }
 
 func (s *LuaStack) isValid(idx int) bool {
+	if idx == api.LuaRegistryIndex {
+		return true
+	}
+
 	absIdx := s.absIndex(idx)
 	return s.absIdxIsValid(absIdx)
 }
 
 func (s *LuaStack) get(idx int) LuaValue {
+	if idx == api.LuaRegistryIndex {
+		return s.state.registry
+	}
+
 	absIdx := s.absIndex(idx)
 	if !s.absIdxIsValid(absIdx) {
 		return nil // ?panic
@@ -119,6 +139,11 @@ func (s *LuaStack) get(idx int) LuaValue {
 }
 
 func (s *LuaStack) set(idx int, val LuaValue) {
+	if idx == api.LuaRegistryIndex {
+		s.state.registry = val.(*LuaTable)
+		return
+	}
+
 	absIdx := s.absIndex(idx)
 	if !s.absIdxIsValid(absIdx) {
 		panic("invalid index!")

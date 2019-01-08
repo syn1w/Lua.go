@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"vczn/luago/api"
 	"vczn/luago/binchunk"
 	"vczn/luago/state"
 	"vczn/luago/vm"
@@ -142,6 +143,25 @@ func printDetail(proto *binchunk.ProtoType) {
 	}
 }
 
+func print(ls api.ILuaState) int {
+	nArgs := ls.GetTop()
+	for i := 1; i <= nArgs; i++ {
+		if ls.IsBoolean(i) {
+			fmt.Printf("%t", ls.ToBoolean(i))
+		} else if ls.IsString(i) {
+			fmt.Printf("%s", ls.ToString(i))
+		} else {
+			fmt.Printf(ls.TypeName(ls.Type(i)))
+		}
+
+		if i < nArgs {
+			fmt.Print("\t")
+		}
+	}
+	fmt.Print()
+	return 0
+}
+
 // func testChunkDump() {
 // 	// if len(os.Args) < 2 {
 // 	// 	log.Fatalln("Usage binchunk <outfiles...>")
@@ -224,11 +244,12 @@ func printDetail(proto *binchunk.ProtoType) {
 // }
 
 func testFunction() {
-	data, err := ioutil.ReadFile("func1.out")
+	data, err := ioutil.ReadFile("hello.out")
 	if err != nil {
 		panic(err)
 	}
 	ls := state.NewLuaState()
+	ls.Register("print", print)
 	ls.Load(data, "table", "b")
 	ls.Call(0, 0)
 }

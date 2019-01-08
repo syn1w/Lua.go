@@ -1,15 +1,24 @@
 package state
 
+import "vczn/luago/api"
+
 // LuaState impl api.ILuaState
 type LuaState struct {
-	stack *LuaStack
+	registry *LuaTable
+	stack    *LuaStack
 }
 
 // NewLuaState new a LuaState
 func NewLuaState() *LuaState {
-	return &LuaState{
-		stack: newLuaStack(20),
+	registry := NewLuaTable(0, 0)
+	registry.put(api.LuaRidxGlobals, NewLuaTable(0, 0))
+	luastate := &LuaState{
+		registry: registry,
 	}
+
+	luastate.pushLuaStack(newLuaStack(api.LuaMinStack, luastate))
+
+	return luastate
 }
 
 func (s *LuaState) pushLuaStack(stack *LuaStack) {

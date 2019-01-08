@@ -38,3 +38,18 @@ const (
 	LuaOpLt        // <
 	LuaOpLe        // <=
 )
+
+// LuaState constants
+const (
+	LuaMinStack = 20
+	LuaMaxStack = 1000000
+
+	//      -max                                       max
+	//        |                                         |
+	//     |__|____________________|____________________|
+	//     |                       0
+	// -max-1000
+	LuaRegistryIndex = -LuaMaxStack - 1000
+
+	LuaRidxGlobals int64 = 2 // index in global
+)
