@@ -7,6 +7,7 @@ type binaryChunk struct {
 }
 
 // xxd ./luac.out 查看 header
+// luac5.3 -l -l luac.out(test.lua)
 
 // windows 下的 header 格式不一样，下面使用 Linux Lua 5.3
 type header struct {
@@ -95,7 +96,7 @@ const (
 
 // Upvalue type
 type Upvalue struct {
-	Instack byte
+	Instack byte // 是父函数的 upvalue 0, 是父函数的 local 1
 	Idx     byte
 }
 

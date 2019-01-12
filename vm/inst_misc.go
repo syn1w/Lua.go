@@ -15,6 +15,6 @@ func jmp(inst Instruction, vm api.ILuaVM) {
 	a, sBx := inst.AsBx()
 	vm.AddPC(sBx)
 	if a != 0 {
-		panic("TODO")
+		vm.CloseUpvalues(a)
 	}
 }

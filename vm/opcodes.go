@@ -106,11 +106,11 @@ var opcodes = []opcode{
 	opcode{0, 1, OpArgN, OpArgN, IABx /* */, "LOADKX  ", loadkx},     // A, 	R(A) := Kst(extra arg)
 	opcode{0, 1, OpArgU, OpArgU, IABC /* */, "LOADBOOL", loadBool},   // A B C, R(A) := (Bool)B; if (C) pc++
 	opcode{0, 1, OpArgU, OpArgN, IABC /* */, "LOADNIL ", loadNil},    // A B,   R(A), R(A+1), ..., R(A+B) := nil
-	opcode{0, 1, OpArgU, OpArgN, IABC /* */, "GETUPVAL", nil},        // A B,   R(A) := UpValue[B]
-	opcode{0, 1, OpArgU, OpArgK, IABC /* */, "GETTABUP", getTableUp}, // A B C, R(A) := UpValue[B][RK(C)]
+	opcode{0, 1, OpArgU, OpArgN, IABC /* */, "GETUPVAL", getUpval},   // A B,   R(A) := UpValue[B]
+	opcode{0, 1, OpArgU, OpArgK, IABC /* */, "GETTABUP", getTabUp},   // A B C, R(A) := UpValue[B][RK(C)]
 	opcode{0, 1, OpArgR, OpArgK, IABC /* */, "GETTABLE", getTable},   // A B C, R(A) := R(B)[RK(C)]
-	opcode{0, 0, OpArgK, OpArgK, IABC /* */, "SETTABUP", nil},        // A B C, UpValue[A][RK(B)] := RK(C)
-	opcode{0, 0, OpArgU, OpArgN, IABC /* */, "SETUPVAL", nil},        // A B,   UpValue[B] := R(A)
+	opcode{0, 0, OpArgK, OpArgK, IABC /* */, "SETTABUP", setTabUp},   // A B C, UpValue[A][RK(B)] := RK(C)
+	opcode{0, 0, OpArgU, OpArgN, IABC /* */, "SETUPVAL", setUpval},   // A B,   UpValue[B] := R(A)
 	opcode{0, 0, OpArgK, OpArgK, IABC /* */, "SETTABLE", setTable},   // A B C, R(A)[RK(B)] := RK(C)
 	opcode{0, 1, OpArgU, OpArgU, IABC /* */, "NEWTABLE", newTable},   // A B C, R(A) := {} (size = B,C)
 	opcode{0, 1, OpArgR, OpArgK, IABC /* */, "SELF    ", luaSelf},    // A B C, R(A+1) := R(B); R(A) := R(B)[RK(C)]

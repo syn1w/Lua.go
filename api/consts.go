@@ -53,3 +53,8 @@ const (
 
 	LuaRidxGlobals int64 = 2 // index in global
 )
+
+// LuaUpvalueIndex converts index of upvalue to pseudo index
+func LuaUpvalueIndex(i int) int {
+	return LuaRegistryIndex - i
+}

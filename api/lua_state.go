@@ -87,6 +87,7 @@ type ILuaState interface {
 	PushGoFunction(f GoFunction)
 	IsGoFunction(idx int) bool
 	ToGoFunction(idx int) GoFunction
+	PushGoClosure(f GoFunction, n int)
 
 	// global table
 	PushGlobalTable()

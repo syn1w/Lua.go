@@ -148,7 +148,7 @@ func print(ls api.ILuaState) int {
 	for i := 1; i <= nArgs; i++ {
 		if ls.IsBoolean(i) {
 			fmt.Printf("%t", ls.ToBoolean(i))
-		} else if ls.IsString(i) {
+		} else if ls.IsString(i) { // string and number
 			fmt.Printf("%s", ls.ToString(i))
 		} else {
 			fmt.Printf(ls.TypeName(ls.Type(i)))
@@ -158,7 +158,7 @@ func print(ls api.ILuaState) int {
 			fmt.Print("\t")
 		}
 	}
-	fmt.Print()
+	fmt.Println()
 	return 0
 }
 
@@ -244,7 +244,7 @@ func print(ls api.ILuaState) int {
 // }
 
 func testFunction() {
-	data, err := ioutil.ReadFile("hello.out")
+	data, err := ioutil.ReadFile("closure.out")
 	if err != nil {
 		panic(err)
 	}

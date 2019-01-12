@@ -42,6 +42,10 @@ func (t *LuaTable) get(key LuaValue) LuaValue {
 		}
 	}
 
+	// // debug
+	// for k, v := range t.m {
+	// 	fmt.Printf("get %v = %v\n", k, v)
+	// }
 	return t.m[key]
 }
 
@@ -75,9 +79,10 @@ func (t *LuaTable) put(key, val LuaValue) {
 	}
 	if val != nil {
 		if t.m == nil {
-			t.m = make(map[LuaValue]LuaValue)
-			t.m[key] = val
+			t.m = make(map[LuaValue]LuaValue, 8)
 		}
+		t.m[key] = val
+
 	} else {
 		delete(t.m, key)
 	}

@@ -1,7 +1,6 @@
 package state
 
 import (
-	"fmt"
 	"vczn/luago/api"
 	"vczn/luago/binchunk"
 	"vczn/luago/vm"
@@ -15,6 +14,12 @@ func (s *LuaState) Load(chunk []byte, chunkName, mode string) int {
 	proto := binchunk.Undump(chunk)
 	c := newLuaClosure(proto)
 	s.stack.push(c)
+
+	if len(proto.Upvalues) > 0 { // set _ENV
+		env := s.registry.get(api.LuaRidxGlobals)
+		c.upvals[0] = &upvalue{&env}
+	}
+
 	return 0
 }
 
@@ -25,8 +30,8 @@ func (s *LuaState) Call(nArgs, nResults int) {
 	if c, ok := val.(*luaClosure); ok {
 		// lua closure
 		if c.proto != nil {
-			fmt.Printf("call %s(%d, %d)\n", c.proto.Source,
-				c.proto.LineDefined, c.proto.LastLineDefined) // debug info
+			// fmt.Printf("call %s(%d, %d)\n", c.proto.Source,
+			// 	c.proto.LineDefined, c.proto.LastLineDefined) // debug info
 			s.callLuaClosure(nArgs, nResults, c)
 		} else if c.goFunc != nil {
 			s.callGoClosure(nArgs, nResults, c)
