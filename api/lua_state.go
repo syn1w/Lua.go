@@ -94,6 +94,16 @@ type ILuaState interface {
 	GetGlobal(name string) LuaType
 	SetGlobal(name string)
 	Register(name string, f GoFunction)
+
+	// metaTable
+	GetMetaTable(idx int) bool
+	SetMetaTable(idx int)
+	RawLen(idx int) uint
+	RawEqual(idx1 int, idx2 int) bool
+	RawGet(idx int) LuaType
+	RawSet(idx int)
+	RawGetI(idx int, i int64) LuaType
+	RawSetI(idx int, i int64)
 }
 
 // GoFunction is called by lua

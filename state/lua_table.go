@@ -7,8 +7,9 @@ import (
 
 // LuaTable { key = value }, key is not nil or NaN
 type LuaTable struct {
-	arr []LuaValue
-	m   map[LuaValue]LuaValue
+	metatable *LuaTable
+	arr       []LuaValue
+	m         map[LuaValue]LuaValue
 }
 
 // NewLuaTable new a LuaTable
@@ -111,4 +112,8 @@ func (t *LuaTable) expandArray() {
 
 func (t *LuaTable) len() int {
 	return len(t.arr) // map?
+}
+
+func (t *LuaTable) hasMetaField(fieldName string) bool {
+	return t.metatable != nil && t.metatable.get(fieldName) != nil
 }

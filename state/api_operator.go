@@ -34,25 +34,26 @@ var (
 )
 
 type operator struct {
+	metaMethod  string
 	integerFunc func(int64, int64) int64
 	floatFunc   func(float64, float64) float64
 }
 
 var operators = []operator{
-	operator{iadd, fadd},
-	operator{isub, fsub},
-	operator{imul, fmul},
-	operator{imod, fmod},
-	operator{nil, pow},
-	operator{nil, div},
-	operator{iidiv, fidiv},
-	operator{band, nil},
-	operator{bor, nil},
-	operator{bxor, nil},
-	operator{shl, nil},
-	operator{shr, nil},
-	operator{iunm, funm},
-	operator{bnot, nil},
+	operator{"__add" /* */, iadd, fadd},
+	operator{"__sub" /* */, isub, fsub},
+	operator{"__mul" /* */, imul, fmul},
+	operator{"__mod" /* */, imod, fmod},
+	operator{"__pow" /* */, nil, pow},
+	operator{"__div" /* */, nil, div},
+	operator{"__idiv" /**/, iidiv, fidiv},
+	operator{"__band" /**/, band, nil},
+	operator{"__bor" /* */, bor, nil},
+	operator{"__nxor" /**/, bxor, nil},
+	operator{"__shl" /* */, shl, nil},
+	operator{"__shr" /* */, shr, nil},
+	operator{"__unm" /* */, iunm, funm},
+	operator{"__bnot" /**/, bnot, nil},
 }
 
 func luaArith(a, b LuaValue, op operator) LuaValue {
@@ -93,16 +94,45 @@ func (s *LuaState) Arithmetic(op api.ArithmeticOp) {
 	oper := operators[op]
 	if result := luaArith(a, b, oper); result != nil {
 		s.stack.push(result) // NOTE: modify stack
-	} else {
-		panic("arithmetic error")
+		return
 	}
+	mm := oper.metaMethod
+	if result, ok := callMetaMethod(a, b, mm, s); ok {
+		s.stack.push(result)
+		return
+	}
+
+	panic("arithmetic error")
+}
+
+func callMetaMethod(a, b LuaValue, mmName string, state *LuaState) (LuaValue, bool) {
+	var mm LuaValue
+	if mm = getMetaField(a, mmName, state); mm == nil {
+		if mm = getMetaField(b, mmName, state); mm == nil {
+			return nil, false
+		}
+	}
+
+	state.stack.check(4)
+	state.stack.push(mm)
+	state.stack.push(a)
+	state.stack.push(b)
+	state.Call(2, 1)
+	return state.stack.pop(), true
+}
+
+func getMetaField(val LuaValue, fieldName string, state *LuaState) LuaValue {
+	if mt := getMetaTable(val, state); mt != nil {
+		return mt.get(fieldName)
+	}
+	return nil
 }
 
 // ------------------------------------
 //        compare methods
 // ------------------------------------
 
-func luaEqual(a, b LuaValue) bool {
+func (s *LuaState) luaEqual(a, b LuaValue) bool {
 	switch x := a.(type) {
 	case nil:
 		return b == nil // nil == nil, nil ~= other
@@ -130,12 +160,19 @@ func luaEqual(a, b LuaValue) bool {
 	case string:
 		y, ok := b.(string)
 		return ok && x == y
+	case *LuaTable:
+		if y, ok := b.(*LuaTable); ok && x != y && s != nil {
+			if result, ok := callMetaMethod(x, y, "__eq", s); ok {
+				return convertToBoolean(result)
+			}
+		}
+		return a == b
 	default:
 		return a == b
 	}
 }
 
-func luaLt(a, b LuaValue) bool {
+func (s *LuaState) luaLt(a, b LuaValue) bool {
 	switch x := a.(type) {
 	case string:
 		if y, ok := b.(string); ok {
@@ -156,11 +193,15 @@ func luaLt(a, b LuaValue) bool {
 			return x < y
 		}
 	}
+
+	if result, ok := callMetaMethod(a, b, "__lt", s); ok {
+		return convertToBoolean(result)
+	}
 	panic("comparison error")
 }
 
-// why not not(b < a), such as NaN
-func luaLe(a, b LuaValue) bool {
+// why not: not(b < a), such as NaN
+func (s *LuaState) luaLe(a, b LuaValue) bool {
 	switch x := a.(type) {
 	case string:
 		if y, ok := b.(string); ok {
@@ -181,6 +222,16 @@ func luaLe(a, b LuaValue) bool {
 			return x <= y
 		}
 	}
+
+	if result, ok := callMetaMethod(a, b, "__le", s); ok {
+		return convertToBoolean(result)
+	}
+
+	// __le is not found, call !__lt(b, a)
+	if result, ok := callMetaMethod(b, a, "__lt", s); ok {
+		return !convertToBoolean(result)
+	}
+
 	panic("comparison error")
 }
 
@@ -190,11 +241,11 @@ func (s *LuaState) Compare(idx1, idx2 int, op api.CompareOp) bool {
 	b := s.stack.get(idx2)
 	switch op {
 	case api.LuaOpEq:
-		return luaEqual(a, b)
+		return s.luaEqual(a, b)
 	case api.LuaOpLt:
-		return luaLt(a, b)
+		return s.luaLt(a, b)
 	case api.LuaOpLe:
-		return luaLe(a, b)
+		return s.luaLe(a, b)
 	default:
 		panic("invalid compare operator")
 	}
@@ -212,6 +263,8 @@ func (s *LuaState) Len(idx int) {
 		s.stack.push(int64(len(str)))
 	} else if t, ok := val.(*LuaTable); ok {
 		s.stack.push(int64(t.len()))
+	} else if result, ok := callMetaMethod(val, val, "__len", s); ok {
+		s.stack.push(result)
 	} else {
 		panic("length method error")
 	}
@@ -236,8 +289,39 @@ func (s *LuaState) Concat(n int) {
 				s.stack.push(s1 + s2)
 				continue
 			}
+
+			b := s.stack.pop()
+			a := s.stack.pop()
+			if result, ok := callMetaMethod(a, b, "__concat", s); ok {
+				s.stack.push(result)
+				continue
+			}
+
 			panic("concatenation error")
 		}
 	}
 	// n == 1 do nothing
+}
+
+// RawLen returns the raw length of the value at stack[idx]
+func (s *LuaState) RawLen(idx int) uint {
+	val := s.stack.get(idx)
+	switch x := val.(type) {
+	case string:
+		return uint(len(x))
+	case *LuaTable:
+		return uint(x.len())
+	default:
+		return 0
+	}
+}
+
+// RawEqual returns two values are primitively equal(that is without calling the `__eq`)
+func (s *LuaState) RawEqual(idx1, idx2 int) bool {
+	if !s.stack.isValid(idx1) || !s.stack.isValid(idx2) {
+		return false
+	}
+
+	val1, val2 := s.stack.get(idx1), s.stack.get(idx2)
+	return s.luaEqual(val1, val2)
 }

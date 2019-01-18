@@ -1,6 +1,7 @@
 package state
 
 import (
+	"fmt"
 	"vczn/luago/api"
 	"vczn/luago/number"
 )
@@ -77,4 +78,28 @@ func convertToInteger(val LuaValue) (int64, bool) {
 	default:
 		return 0, false
 	}
+}
+
+func setMetaTable(val LuaValue, mt *LuaTable, state *LuaState) {
+	if t, ok := val.(*LuaTable); ok { // val is a table
+		t.metatable = mt
+		return
+	}
+
+	// val is not a table, register into registry table
+	key := fmt.Sprintf("_MT%d", typeOf(val))
+	state.registry.put(key, val)
+}
+
+func getMetaTable(val LuaValue, state *LuaState) *LuaTable {
+	if t, ok := val.(*LuaTable); ok {
+		return t.metatable
+	}
+
+	key := fmt.Sprintf("_MT%d", typeOf(val))
+	if mt := state.registry.get(key); mt != nil {
+		return mt.(*LuaTable)
+	}
+
+	return nil
 }

@@ -12,14 +12,14 @@ func (s *LuaState) PushGlobalTable() {
 // for name(key) in global table
 func (s *LuaState) GetGlobal(name string) api.LuaType {
 	t := s.registry.get(api.LuaRidxGlobals)
-	return s.getTable(t, name)
+	return s.getTable(t, name, false)
 }
 
 // SetGlobal sets globalTable[name] by stack.top
 func (s *LuaState) SetGlobal(name string) {
 	t := s.registry.get(api.LuaRidxGlobals)
 	val := s.stack.pop()
-	s.setTable(t, name, val)
+	s.setTable(t, name, val, false)
 }
 
 // Register set globalTable[name] = f

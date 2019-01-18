@@ -244,14 +244,29 @@ func print(ls api.ILuaState) int {
 // }
 
 func testFunction() {
-	data, err := ioutil.ReadFile("closure.out")
+	data, err := ioutil.ReadFile("vec.out")
 	if err != nil {
 		panic(err)
 	}
 	ls := state.NewLuaState()
 	ls.Register("print", print)
+	ls.Register("getmetatable", getMetaTable)
+	ls.Register("setmetatable", setMetaTable)
 	ls.Load(data, "table", "b")
 	ls.Call(0, 0)
+}
+
+// temporary function for testing
+func getMetaTable(ls api.ILuaState) int {
+	if ls.GetMetaTable(1) {
+		ls.PushNil()
+	}
+	return 1
+}
+
+func setMetaTable(ls api.ILuaState) int {
+	ls.SetMetaTable(1)
+	return 1
 }
 
 func main() {
