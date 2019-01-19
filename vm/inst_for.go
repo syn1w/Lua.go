@@ -37,3 +37,19 @@ func luaForPrep(inst Instruction, vm api.ILuaVM) {
 	// pc+=sBx
 	vm.AddPC(sBx)
 }
+
+// tforloop A sBx |
+// if R(A+1) != nil then {
+//	   R(A)=R(A+1); pc += sBx
+// }
+// for each, R(A) iterator function, R(A+1) state, R(A+2) enumeration index, R(A+3), ...
+// loop variables onwards
+// update _var -> nextkey
+func luaTForLoop(inst Instruction, vm api.ILuaVM) {
+	a, sBx := inst.AsBx()
+	a++
+	if !vm.IsNil(a + 1) {
+		vm.Copy(a+1, a)
+		vm.AddPC(sBx)
+	}
+}

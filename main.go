@@ -244,7 +244,7 @@ func print(ls api.ILuaState) int {
 // }
 
 func testFunction() {
-	data, err := ioutil.ReadFile("vec.out")
+	data, err := ioutil.ReadFile("iter.out")
 	if err != nil {
 		panic(err)
 	}
@@ -252,6 +252,9 @@ func testFunction() {
 	ls.Register("print", print)
 	ls.Register("getmetatable", getMetaTable)
 	ls.Register("setmetatable", setMetaTable)
+	ls.Register("next", next)
+	ls.Register("pairs", pairs)
+	ls.Register("ipairs", ipairs)
 	ls.Load(data, "table", "b")
 	ls.Call(0, 0)
 }
@@ -267,6 +270,40 @@ func getMetaTable(ls api.ILuaState) int {
 func setMetaTable(ls api.ILuaState) int {
 	ls.SetMetaTable(1)
 	return 1
+}
+
+func next(ls api.ILuaState) int {
+	ls.SetTop(2) // 1 table[, 2 key], key can be nil
+	if ls.Next(1) {
+		return 2 // returns nextKey, nextVal
+	}
+	ls.PushNil()
+	return 1 // returns nil
+}
+
+// <==>
+// _f, _s, _var = next, t, nil
+func pairs(ls api.ILuaState) int {
+	ls.PushGoFunction(next) // _f, next
+	ls.PushValue(1)         // _s, table
+	ls.PushNil()            // _var, key
+	return 3
+}
+
+func ipairs(ls api.ILuaState) int {
+	ls.PushGoFunction(inext)
+	ls.PushValue(1)
+	ls.PushInteger(0)
+	return 3
+}
+
+func inext(ls api.ILuaState) int {
+	nexti := ls.ToInteger(2) + 1
+	ls.PushInteger(nexti)
+	if ls.GetI(1, nexti) == api.LuaTNil {
+		return 1
+	}
+	return 2
 }
 
 func main() {

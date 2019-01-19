@@ -104,6 +104,9 @@ type ILuaState interface {
 	RawSet(idx int)
 	RawGetI(idx int, i int64) LuaType
 	RawSetI(idx int, i int64)
+
+	// iterator
+	Next(idx int) bool
 }
 
 // GoFunction is called by lua

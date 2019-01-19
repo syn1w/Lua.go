@@ -124,3 +124,13 @@ func luaSelf(inst Instruction, vm api.ILuaVM) {
 	vm.GetTable(b)
 	vm.Replace(a)
 }
+
+// tforcall A C | R(A+3), ..., R(A+2+C) := R(A)(R(A+1), R(A+2))
+// call next ==> pushes key and value
+func luaTForCall(inst Instruction, vm api.ILuaVM) {
+	a, _, c := inst.ABC()
+	a++
+	pushFuncAndArgs(a, 3, vm) // next/inext
+	vm.Call(2, c)             // call next/inext
+	popResults(a+3, c+1, vm)  // return k, v
+}
