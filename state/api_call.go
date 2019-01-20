@@ -20,7 +20,7 @@ func (s *LuaState) Load(chunk []byte, chunkName, mode string) int {
 		c.upvals[0] = &upvalue{&env}
 	}
 
-	return 0
+	return api.LuaOk
 }
 
 // Call function in stack top

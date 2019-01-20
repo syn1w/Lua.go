@@ -107,6 +107,10 @@ type ILuaState interface {
 
 	// iterator
 	Next(idx int) bool
+
+	// error
+	Error() int
+	PCall(nArgs, nResults, msgh int) int
 }
 
 // GoFunction is called by lua

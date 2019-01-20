@@ -244,7 +244,7 @@ func print(ls api.ILuaState) int {
 // }
 
 func testFunction() {
-	data, err := ioutil.ReadFile("iter.out")
+	data, err := ioutil.ReadFile("err.out")
 	if err != nil {
 		panic(err)
 	}
@@ -255,6 +255,8 @@ func testFunction() {
 	ls.Register("next", next)
 	ls.Register("pairs", pairs)
 	ls.Register("ipairs", ipairs)
+	ls.Register("error", luaError)
+	ls.Register("pcall", pCall)
 	ls.Load(data, "table", "b")
 	ls.Call(0, 0)
 }
@@ -304,6 +306,18 @@ func inext(ls api.ILuaState) int {
 		return 1
 	}
 	return 2
+}
+
+func luaError(ls api.ILuaState) int {
+	return ls.Error()
+}
+
+func pCall(ls api.ILuaState) int {
+	nArgs := ls.GetTop() - 1 // args
+	status := ls.PCall(nArgs, -1, 0)
+	ls.PushBoolean(status == api.LuaOk)
+	ls.Insert(1)
+	return ls.GetTop()
 }
 
 func main() {

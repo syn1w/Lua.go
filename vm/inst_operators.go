@@ -115,6 +115,7 @@ func luaCompare(inst Instruction, vm api.ILuaVM, op api.CompareOp) {
 	vm.Pop(2)
 }
 
+// eq 0 b c, if b == c then pc++
 func luaEq(inst Instruction, vm api.ILuaVM) { // ==
 	luaCompare(inst, vm, api.LuaOpEq)
 }
