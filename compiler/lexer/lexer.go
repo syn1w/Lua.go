@@ -15,6 +15,10 @@ type Lexer struct {
 	chunk     string // source code
 	chunkName string // source file name
 	line      int    // current line no.
+
+	nextToken     string
+	nextTokenKind int
+	nextTokenLine int
 }
 
 // NewLexer new lua lexer
@@ -28,6 +32,15 @@ func NewLexer(chunk, chunkName string) *Lexer {
 
 // NextToken returns next token
 func (lex *Lexer) NextToken() (line, kind int, token string) {
+	if lex.nextTokenLine > 0 {
+		line = lex.nextTokenLine
+		kind = lex.nextTokenKind
+		token = lex.nextToken
+		lex.line = lex.nextTokenLine
+		lex.nextTokenLine = 0
+		return
+	}
+
 	lex.skipWhiteSpaces()
 	if len(lex.chunk) == 0 {
 		return lex.line, TokenEOF, "EOF"
@@ -167,22 +180,33 @@ func (lex *Lexer) NextToken() (line, kind int, token string) {
 	return
 }
 
-func (lex *Lexer) skipWhiteSpaces() {
-	for len(lex.chunk) > 0 {
-		if lex.test("--") {
-			lex.skipComment()
-		} else if lex.test("\r\n") || lex.test("\n\r") {
-			lex.next(2)
-			lex.line++
-		} else if isNewLine(lex.chunk[0]) {
-			lex.next(1)
-			lex.line++
-		} else if isWhiteSpace(lex.chunk[0]) {
-			lex.next(1)
-		} else {
-			break
-		}
+// LookAhead caches next token and returns the of next token
+func (lex *Lexer) LookAhead() int {
+	if lex.nextTokenLine > 0 {
+		return lex.nextTokenKind
 	}
+
+	currentLine := lex.line
+	line, kind, token := lex.NextToken()
+	lex.line = currentLine
+	lex.nextTokenLine = line
+	lex.nextTokenKind = kind
+	lex.nextToken = token
+	return kind
+}
+
+// Line return current line of lexer
+func (lex *Lexer) Line() int {
+	return lex.line
+}
+
+// AssertNextTokenKind extracts the token of the specified type
+func (lex *Lexer) AssertNextTokenKind(k int) (line int, token string) {
+	line, kind, token := lex.NextToken()
+	if kind != k {
+		lex.error("syntax error near '%s'", token)
+	}
+	return line, token
 }
 
 var reLeftLongBracket = regexp.MustCompile(`^\[=*\[`)
@@ -350,6 +374,18 @@ func (lex *Lexer) escape(str string) string {
 	return buf.String()
 }
 
+// Alternative1 | Alternative2
+// Alternative1: ^0[xX][0-9a-fA-F]*(\.[0-9a-fA-F]*)?([pP][+\-]?[0-9]+)?
+//   matches floating point number
+//   0[xX] matches 0x or 0X
+//   [0-9a-fA-F]* matches integer part
+//   (\.[0-9a-fA-F]*)? matches decimals part
+//   ([pP][+\-]?[0-9]+)? matches power part, such as 0xA23p-4
+// Alternative2: ^[0-9]*(\.[0-9]*)?([eE][+\-]?[0-9]+)?
+//   matches integer number
+//   [0-9]* matches integer part
+//   (\.[0-9]*)? matches decimals part
+//   ([eE][+\-]?[0-9]+)? matches exponent part
 var reNumber = regexp.MustCompile(`^0[xX][0-9a-fA-F]*(\.[0-9a-fA-F]*)?([pP][+\-]?[0-9]+)?|^[0-9]*(\.[0-9]*)?([eE][+\-]?[0-9]+)?`)
 
 func (lex *Lexer) scanNumber() string {
@@ -382,6 +418,24 @@ func (lex *Lexer) error(format string, args ...interface{}) {
 	err := fmt.Sprintf("%s:%d: %s", lex.chunkName, lex.line,
 		fmt.Sprintf(format, args...))
 	panic(err)
+}
+
+func (lex *Lexer) skipWhiteSpaces() {
+	for len(lex.chunk) > 0 {
+		if lex.test("--") {
+			lex.skipComment()
+		} else if lex.test("\r\n") || lex.test("\n\r") {
+			lex.next(2)
+			lex.line++
+		} else if isNewLine(lex.chunk[0]) {
+			lex.next(1)
+			lex.line++
+		} else if isWhiteSpace(lex.chunk[0]) {
+			lex.next(1)
+		} else {
+			break
+		}
+	}
 }
 
 func isWhiteSpace(c byte) bool {

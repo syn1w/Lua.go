@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"vczn/luago/api"
 	"vczn/luago/binchunk"
+	"vczn/luago/compiler/lexer"
 	"vczn/luago/state"
 	"vczn/luago/vm"
 )
@@ -320,7 +321,21 @@ func pCall(ls api.ILuaState) int {
 	return ls.GetTop()
 }
 
+func testLexer() {
+	data := `print("hello world\n", 42, 3.14)`
+	lex := lexer.NewLexer(data, "string")
+	for {
+		line, kind, token := lex.NextToken()
+		fmt.Printf("[%2d] [%-10s] %s\n",
+			line, lexer.KindToString(kind), token)
+		if kind == lexer.TokenEOF {
+			break
+		}
+	}
+}
+
 func main() {
 	// testVM()
-	testFunction()
+	// testFunction()
+	testLexer()
 }

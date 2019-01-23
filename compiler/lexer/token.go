@@ -91,3 +91,27 @@ var keywars = map[string]int{
 	"untile":   TokenKwUntil,
 	"while":    TokenKwWhile,
 }
+
+// KindToString coverts kind int to string
+func KindToString(kind int) string {
+	switch {
+	case kind == TokenEOF:
+		return "eof"
+	case kind == TokenVararg:
+		return "vararg"
+	case kind <= TokenSepRcurly:
+		return "separator"
+	case kind <= TokenOpNot:
+		return "operator"
+	case kind <= TokenKwWhile:
+		return "keyword"
+	case kind == TokenIdentifier:
+		return "identifier"
+	case kind == TokenNumber:
+		return "number"
+	case kind == TokenString:
+		return "string"
+	default:
+		return "other"
+	}
+}
