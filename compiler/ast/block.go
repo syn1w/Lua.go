@@ -1,6 +1,6 @@
 package ast
 
-// chun ::= block
+// chunk ::= block
 
 // Block is code block
 // block ::= {stat} [retstat]

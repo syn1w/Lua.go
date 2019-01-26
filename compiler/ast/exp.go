@@ -1,6 +1,6 @@
 package ast
 
-// exp ::=  nil | false | true | Numeral | LiteralString | '...' | functiondef |
+// exp ::=  nil | false | true | Numeral | LiteralString | ... | functiondef |
 //          prefixexp | tableconstructor | exp binop exp | unop exp
 
 // Exp is expression interface
@@ -51,10 +51,10 @@ type NameExp struct {
 }
 
 // TableConstructionExp is table construction expression
-// tableconstructor ::= '{'' [fieldlist] '}''
+// tableconstructor ::= '{' [fieldlist] '}'
 // fieldlist ::= field {fieldsep field} [fieldsep]
-// field ::= '['' exp ']'' '='' exp | Name '='' exp | exp
-// fieldsep ::= ','' | ';''
+// field ::= '[' exp ']' '=' exp | Name '=' exp | exp
+// fieldsep ::= ',' | ';'
 type TableConstructionExp struct {
 	FirstLine int // line of '{'
 	LastLine  int // line of '}'
@@ -74,8 +74,8 @@ type FuncDefExp struct {
 // prefixexp includes var expression, function call expression
 // and parentheses expression
 // prefixexp ::= var | functioncall | '(' exp ')'
-// var ::=  Name | prefixexp ‘[’ exp ‘]’ | prefixexp ‘.’ Name
-// functioncall ::=  prefixexp args | prefixexp ‘:’ Name args
+// var ::=  Name | prefixexp '[' exp ']' | prefixexp '.' Name
+// functioncall ::=  prefixexp args | prefixexp ':' Name args
 // =>
 // prefixexp ::= Name |
 //               '(' exp ')'
@@ -105,7 +105,7 @@ type ParensExp struct {
 }
 
 // UnOpExp is unary expression
-// unop ::= '-'' | not | '#'' | '~''
+// unop ::= '-' | not | '#' | '~'
 type UnOpExp struct {
 	Line int
 	Op   int
