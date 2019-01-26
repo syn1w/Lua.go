@@ -1,7 +1,7 @@
 package ast
 
-// stat ::=  ';' |
-// 	varlist '=' explist |
+// stat ::=  `;` |
+// 	varlist `=` explist |
 // 	functioncall |
 // 	label |
 // 	break |
@@ -10,11 +10,11 @@ package ast
 // 	while exp do block end |
 // 	repeat block until exp |
 // 	if exp then block {elseif exp then block} [else block] end |
-// 	for Name '=' exp ',' exp [',' exp] do block end |
+// 	for Name `=` exp `,` exp [`,` exp] do block end |
 // 	for namelist in explist do block end |
 // 	function funcname funcbody |
 // 	local function Name funcbody |
-// 	local namelist [',' explist]
+// 	local namelist [`,` explist]
 
 // Stat is statement interface
 type Stat interface{}
@@ -90,11 +90,6 @@ type ForInStat struct {
 }
 
 // LocalFuncDefStat is `local function funcname funcbody` statement
-// functiondef ::= function funcbody
-// funcname ::= Name {'.' Name} [':' Name]
-// funcbody ::= '(' [parlist] ')' block end
-// namelist ::= Name {',' Name}
-// parlist ::= namelist [',' '...'] | '...'
 type LocalFuncDefStat struct {
 	Name string
 	Func *FuncDefExp
