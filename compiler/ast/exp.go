@@ -1,6 +1,6 @@
 package ast
 
-// exp ::=  nil | false | true | Numeral | LiteralString | ... | functiondef |
+// exp ::=  `nil` | `false` | `true` | Numeral | LiteralString | `...` | functiondef |
 //          prefixexp | tableconstructor | exp binop exp | unop exp
 
 // Exp is expression interface
@@ -51,10 +51,10 @@ type NameExp struct {
 }
 
 // TableConstructionExp is table construction expression
-// tableconstructor ::= '{' [fieldlist] '}'
+// tableconstructor ::= `{` [fieldlist] `}`
 // fieldlist ::= field {fieldsep field} [fieldsep]
-// field ::= '[' exp ']' '=' exp | Name '=' exp | exp
-// fieldsep ::= ',' | ';'
+// field ::= `[` exp `]` `=` exp | Name `=` exp | exp
+// fieldsep ::= `,` | `;`
 type TableConstructionExp struct {
 	FirstLine int // line of '{'
 	LastLine  int // line of '}'
@@ -63,9 +63,13 @@ type TableConstructionExp struct {
 }
 
 // FuncDefExp is function define expression
+// functiondef ::= `function` funcbody
+// funcbody ::= `(` [parlist] `)` block end
+// parlist ::= namelist [`,` `...`] | `...`
+// namelist ::= Name {`,` Name}
 type FuncDefExp struct {
 	FirstLine int
-	LastLine  int
+	LastLine  int // line of `end`
 	ParList   []string
 	IsVararg  bool
 	MBlock    *Block
@@ -73,15 +77,15 @@ type FuncDefExp struct {
 
 // prefixexp includes var expression, function call expression
 // and parentheses expression
-// prefixexp ::= var | functioncall | '(' exp ')'
-// var ::=  Name | prefixexp '[' exp ']' | prefixexp '.' Name
-// functioncall ::=  prefixexp args | prefixexp ':' Name args
+// prefixexp ::= var | functioncall | `(` exp `)`
+// var ::=  Name | prefixexp `[` exp `]` | prefixexp `.` Name
+// functioncall ::=  prefixexp args | prefixexp `:` Name args
 // =>
 // prefixexp ::= Name |
-//               '(' exp ')'
-//               prefixexp '[' exp ']'
-//               prefixexp '.' Name
-//               prefixexp [':' Name] args
+//               `(` exp `)`
+//               prefixexp `(` exp `)`
+//               prefixexp `.` Name
+//               prefixexp [`:` Name] args
 
 // TableAccessExp is table access expression
 type TableAccessExp struct {
@@ -105,7 +109,7 @@ type ParensExp struct {
 }
 
 // UnOpExp is unary expression
-// unop ::= '-' | not | '#' | '~'
+// unop ::= `-` | `not` | `#` | `~`
 type UnOpExp struct {
 	Line int
 	Op   int
@@ -113,10 +117,10 @@ type UnOpExp struct {
 }
 
 // BinOpExp is binary expression
-// binop ::=  '+' | '-' | '*' | '/' | '//' | '^' | '%' |
-//            '&' | '~' | '|' | '>>' | '<<' | '..' |
-//            '<' | '<=' | '>' | '>=' | '==' | '~=' |
-//            and | or
+// binop ::=  `+` | `-` | `*` | `/` | `//` | `^` | `%` |
+//            `&` | `~` | `|` | `>>` | `<<` | `..` |
+//            `<` | `<=` | `>` | `>=` | `==` | `~=` |
+//            `and` | `or`
 type BinOpExp struct {
 	Line int
 	Op   int
