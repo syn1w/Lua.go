@@ -1,11 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"vczn/luago/api"
 	"vczn/luago/binchunk"
 	"vczn/luago/compiler/lexer"
+	"vczn/luago/compiler/parser"
 	"vczn/luago/state"
 	"vczn/luago/vm"
 )
@@ -23,7 +25,7 @@ import (
 // n | ptr
 
 // chunk 内部
-// 指令表、常量表、子函数原型等信息都是 list 存储的
+// 指令表、常量表、子函数原型等信息都是 list 存储的.
 
 func list(proto *binchunk.ProtoType) {
 	printHeader(proto)
@@ -334,8 +336,19 @@ func testLexer() {
 	}
 }
 
+func testParse() {
+	data := `print("hello world\n", 42, 3.14)`
+	ast := parser.Parse(data, "string")
+	b, err := json.Marshal(ast)
+	if err != nil {
+		panic(err)
+	}
+
+	println(string(b))
+}
+
 func main() {
 	// testVM()
 	// testFunction()
-	testLexer()
+	testParse()
 }

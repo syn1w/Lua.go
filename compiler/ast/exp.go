@@ -44,20 +44,14 @@ type VarargExp struct {
 	Line int
 }
 
-// NameExp is identifier name expression
-type NameExp struct {
-	Line int
-	Name string
-}
-
 // TableConstructionExp is table construction expression
 // tableconstructor ::= `{` [fieldlist] `}`
 // fieldlist ::= field {fieldsep field} [fieldsep]
 // field ::= `[` exp `]` `=` exp | Name `=` exp | exp
 // fieldsep ::= `,` | `;`
 type TableConstructionExp struct {
-	FirstLine int // line of '{'
-	LastLine  int // line of '}'
+	FirstLine int // line of `{`
+	LastLine  int // line of `}`
 	KeyExps   []Exp
 	ValExps   []Exp
 }
@@ -83,13 +77,19 @@ type FuncDefExp struct {
 // =>
 // prefixexp ::= Name |
 //               `(` exp `)`
-//               prefixexp `(` exp `)`
+//               prefixexp `[` exp `]`
 //               prefixexp `.` Name
 //               prefixexp [`:` Name] args
 
+// NameExp is identifier name expression
+type NameExp struct {
+	Line int
+	Name string
+}
+
 // TableAccessExp is table access expression
 type TableAccessExp struct {
-	LastLint  int
+	LastLine  int
 	PrefixExp Exp
 	Key       Exp
 }

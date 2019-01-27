@@ -22,7 +22,7 @@ type Stat interface{}
 // EmptyStat is `;` statement
 type EmptyStat struct{}
 
-// AssignStat is `varlist '=' explist` statement
+// AssignStat is `varlist `=` explist` statement
 type AssignStat struct {
 	LastLine int
 	VarList  []Exp
@@ -70,7 +70,7 @@ type IfStat struct {
 	Blocks []*Block
 }
 
-// ForNumStat is `for Name '=' exp ',' exp [',' exp] do block end` statement
+// ForNumStat is `for Name `=` exp `,` exp [`,` exp] do block end` statement
 type ForNumStat struct {
 	LineFor  int
 	LineDo   int
@@ -95,7 +95,7 @@ type LocalFuncDefStat struct {
 	Func *FuncDefExp
 }
 
-// LocalVarDeclStat is `local namelist ['=' explist]` statement
+// LocalVarDeclStat is `local namelist [`=` explist]` statement
 type LocalVarDeclStat struct {
 	LastLine int
 	NameList []string
