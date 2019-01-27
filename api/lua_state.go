@@ -11,13 +11,13 @@ package api
 //
 
 // LuaType is a enum type, value LuaTxxx in api/consts.go
-type LuaType int
+type LuaType = int
 
 // ArithmeticOp is arithmetic operator
-type ArithmeticOp int
+type ArithmeticOp = int
 
 // CompareOp is compare operator
-type CompareOp int
+type CompareOp = int
 
 // ILuaState LuaState interface
 type ILuaState interface {
