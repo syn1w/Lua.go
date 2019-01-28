@@ -67,7 +67,7 @@ const (
 	TokenOpBxor     = TokenOpWave  // xor
 )
 
-var keywars = map[string]int{
+var keywords = map[string]int{
 	"and":      TokenOpAnd,
 	"break":    TokenKwBreak,
 	"do":       TokenKwDo,
@@ -88,7 +88,7 @@ var keywars = map[string]int{
 	"return":   TokenKwReturn,
 	"then":     TokenKwThen,
 	"true":     TokenKwTrue,
-	"untile":   TokenKwUntil,
+	"until":    TokenKwUntil,
 	"while":    TokenKwWhile,
 }
 

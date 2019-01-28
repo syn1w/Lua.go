@@ -111,6 +111,7 @@ func (lex *Lexer) NextToken() (line, kind int, token string) {
 			lex.next(2)
 			return lex.line, TokenOpNe, "~="
 		}
+		lex.next(1)
 		return lex.line, TokenOpWave, "~"
 	case '=':
 		if lex.test("==") {
@@ -170,13 +171,13 @@ func (lex *Lexer) NextToken() (line, kind int, token string) {
 
 	if c == '_' || isLetter(c) {
 		token := lex.scanIdentifier()
-		if kind, found := keywars[token]; found {
+		if kind, found := keywords[token]; found {
 			return lex.line, kind, token
 		}
 		return lex.line, TokenIdentifier, token
 	}
 
-	lex.error("unexpected symbol near '%q'", c)
+	lex.error("unexpected symbol near '%c'", c)
 	return
 }
 
@@ -259,7 +260,7 @@ func (lex *Lexer) scanShortString() string {
 func (lex *Lexer) scanLongString() string {
 	leftLongBracket := reLeftLongBracket.FindString(lex.chunk)
 	if leftLongBracket == "" {
-		lex.error("invalid long string delimiter hear '%s'", lex.chunk[0:2])
+		lex.error("invalid long string delimiter near '%s'", lex.chunk[0:2])
 	}
 	rightLongBracket := strings.Replace(leftLongBracket, "[", "]", -1)
 	rightLongBracketIdx := strings.Index(lex.chunk, rightLongBracket)
@@ -290,7 +291,7 @@ func (lex *Lexer) escape(str string) string {
 		}
 		// str[0] == '\\'
 		if len(str) == 1 {
-			lex.error("unfinished string: escape character")
+			lex.error("unfinished short string")
 		}
 
 		switch str[1] {
@@ -335,7 +336,7 @@ func (lex *Lexer) escape(str string) string {
 			str = str[2:]
 			continue
 		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9': // \ddd
-			if found := reDecEscapeSeq.FindString(lex.chunk); found != "" {
+			if found := reDecEscapeSeq.FindString(str); found != "" {
 				d, _ := strconv.ParseInt(found[1:], 10, 32)
 				if d <= 0xFF {
 					buf.WriteByte(byte(d))
@@ -345,14 +346,14 @@ func (lex *Lexer) escape(str string) string {
 				lex.error("decimal escape too large near '%s'", found)
 			}
 		case 'x': // \xhh
-			if found := reHexEscapeSeq.FindString(lex.chunk); found != "" {
+			if found := reHexEscapeSeq.FindString(str); found != "" {
 				d, _ := strconv.ParseInt(found[2:], 16, 32)
 				buf.WriteByte(byte(d))
 				str = str[len(found):]
 				continue
 			}
 		case 'u': // \u{hhh}
-			if found := reUnicodeEscapeSeq.FindString(lex.chunk); found != "" {
+			if found := reUnicodeEscapeSeq.FindString(str); found != "" {
 				d, err := strconv.ParseInt(found[3:len(found)-1], 16, 32)
 				if err == nil && d <= 0x10FFFF {
 					buf.WriteRune(rune(d))
@@ -368,7 +369,7 @@ func (lex *Lexer) escape(str string) string {
 			}
 			continue
 		}
-		lex.error("invalid escape sequence near '%q'", str[1])
+		lex.error("invalid escape sequence near '\\%c'", str[1])
 	}
 
 	return buf.String()
@@ -457,5 +458,5 @@ func isDigit(c byte) bool {
 }
 
 func isLetter(c byte) bool {
-	return (c >= 'a' && c <= 'z') || (c >= 'A' || c <= 'Z')
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
 }
