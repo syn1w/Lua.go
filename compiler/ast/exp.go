@@ -99,7 +99,7 @@ type FuncCallExp struct {
 	FirstLine int
 	LastLine  int
 	PrefixExp Exp
-	NameExp   Exp
+	FNameExp  *StringExp
 	Args      []Exp
 }
 

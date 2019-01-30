@@ -436,7 +436,7 @@ func parseFuncCallExp(lex *lexer.Lexer, exp ast.Exp) ast.Exp {
 		FirstLine: line,
 		LastLine:  lastLine,
 		PrefixExp: exp,
-		NameExp:   nameExp,
+		FNameExp:  nameExp,
 		Args:      args,
 	}
 }
