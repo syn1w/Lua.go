@@ -151,7 +151,9 @@ func fdExpToString(exp *ast.FuncDefExp, name string) string {
 		}
 	}
 
-	str += ") end"
+	str += ") "
+	str += blockToString(exp.MBlock) + " end"
+
 	return str
 }
 
@@ -169,5 +171,158 @@ func fcExpToString(exp *ast.FuncCallExp) string {
 		}
 	}
 	str += ")"
+	return str
+}
+
+func statToString(stat ast.Stat) string {
+	switch x := stat.(type) {
+	case *ast.EmptyStat:
+		return ";"
+	case *ast.BreakStat:
+		return "break"
+	case *ast.LabelStat:
+		return "::" + x.Name + "::"
+	case *ast.GotoStat:
+		return "goto " + x.Name
+	case *ast.DoStat:
+		return "do " + blockToString(x.MBlock) + " end"
+	case *ast.WhileStat:
+		return "while " + expToString(x.BExp) + " do " +
+			blockToString(x.MBlock) + " end"
+	case *ast.RepeatStat:
+		return "repeat " + blockToString(x.MBlock) +
+			" until " + expToString(x.BExp)
+	case *ast.FuncCallStat:
+		return fcExpToString(x)
+	case *ast.IfStat:
+		return ifStatToString(x)
+	case *ast.ForNumStat:
+		return forNumStatToString(x)
+	case *ast.ForInStat:
+		return forInStatToString(x)
+	case *ast.AssignStat:
+		return assignStatToString(x)
+	case *ast.LocalVarDeclStat:
+		return localVarDefStatToString(x)
+	case *ast.LocalFuncDefStat:
+		return "local " + fdExpToString(x.Func, x.Name)
+	}
+
+	panic("todo")
+}
+
+// {stat} [retstat]
+func blockToString(block *ast.Block) string {
+	str := ""
+	if len(block.Stats) > 0 {
+		for i, stat := range block.Stats {
+			str += statToString(stat)
+			if i < len(block.Stats)-1 {
+				str += " "
+			}
+		}
+	}
+
+	if block.RetExps != nil {
+		if len(block.Stats) == 0 {
+			str += "return"
+		} else {
+			str += " return"
+		}
+
+		for _, exp := range block.RetExps {
+			str += " " + expToString(exp)
+		}
+	}
+
+	return str
+}
+
+// if exp then block {elseif exp then block} [else block] end
+// => else -> elseif true
+func ifStatToString(stat *ast.IfStat) string {
+	str := "if " + expToString(stat.BExps[0]) +
+		" then " + blockToString(stat.Blocks[0])
+	for i := 1; i < len(stat.BExps); i++ {
+		str += " elseif " + expToString(stat.BExps[i])
+		str += " then " + blockToString(stat.Blocks[i])
+	}
+
+	str += " end"
+	return str
+}
+
+// for v = e1, e2, e3 do block end
+func forNumStatToString(stat *ast.ForNumStat) string {
+	str := "for " + stat.VarName + " = " + expToString(stat.InitExp) +
+		", " + expToString(stat.LimitExp)
+	if stat.StepExp != nil {
+		str += ", " + expToString(stat.StepExp)
+	}
+	str += " do " + blockToString(stat.MBlock) + " end"
+	return str
+}
+
+// for namelist in explist do block end
+// namelist ::= Name {`,` Name}
+func forInStatToString(stat *ast.ForInStat) string {
+	str := "for "
+	for i, name := range stat.NameList {
+		str += name
+		if i < len(stat.NameList)-1 {
+			str += ", "
+		}
+	}
+
+	str += " in "
+	for i, exp := range stat.ExpList {
+		str += expToString(exp)
+		if i < len(stat.ExpList)-1 {
+			str += ", "
+		}
+	}
+	str += " do " + blockToString(stat.MBlock) + " end"
+
+	return str
+}
+
+func assignStatToString(stat *ast.AssignStat) string {
+	str := ""
+	for i, name := range stat.VarList {
+		str += expToString(name)
+		if i < len(stat.VarList)-1 {
+			str += ", "
+		}
+	}
+
+	str += " = "
+
+	for i, exp := range stat.ExpList {
+		str += expToString(exp)
+		if i < len(stat.ExpList)-1 {
+			str += ", "
+		}
+	}
+
+	return str
+}
+
+func localVarDefStatToString(stat *ast.LocalVarDeclStat) string {
+	str := "local "
+	for i, name := range stat.NameList {
+		str += name
+		if i < len(stat.NameList)-1 {
+			str += ", "
+		}
+	}
+
+	str += " = "
+	for i, exp := range stat.ExpList {
+		str += expToString(exp)
+		if i < len(stat.ExpList)-1 {
+			str += ", "
+		}
+	}
+
 	return str
 }

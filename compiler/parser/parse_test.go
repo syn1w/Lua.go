@@ -58,6 +58,8 @@ func TestBinopExp(t *testing.T) {
 	testExp2(t, `42 % 4`, `2`)
 	testExp2(t, `a % b`, `(a % b)`)
 	testExp2(t, `5+x^2*8`, `(5 + ((x ^ 2) * 8))`)
+	testExp2(t, `5 / 2`, `2.500000`)
+	testExp2(t, `5 // 2`, `2`)
 	testExp2(t, `true or false or 2 or nil or "foo"`, `true`)
 	testExp2(t, `false and true and nil and 0 and a`, `false`)
 	testExp2(t, `true and 1 and "foo" and a`, `a`)
@@ -129,4 +131,123 @@ func testExp2(t *testing.T, src, want string) {
 	if want != got {
 		t.Errorf("want='%s', got='%s'", want, got)
 	}
+}
+
+func TestStat(t *testing.T) {
+	testStat(t, `;`)
+	testStat(t, `break`)
+	testStat(t, `::label::`)
+	testStat(t, `goto label`)
+	testStat2(t, `do ; end`, `do  end`)
+	testStat2(t, `repeat ; until true`, `repeat  until true`)
+	testStat2(t, `for v = 1, 100, 1 do ; end`, `for v = 1, 100, 1 do  end`)
+	testStat2(t, `function foo() end`, `foo = function()  end`)
+	testStat(t, `local function foo()  end`)
+	testStat(t, `local a = 1`)
+}
+
+func TestIfStat(t *testing.T) {
+	testStat2(t, `if true then ; end`, `if true then  end`)
+	testStat2(t, `if a then ; else ; end`, `if a then  elseif true then  end`)
+	testStat2(t, `if a then ; elseif b then ; else ; end`,
+		`if a then  elseif b then  elseif true then  end`)
+	testStat2(t, `if a then x = 42 else x = 3.14 end`,
+		`if a then x = 42 elseif true then x = 3.140000 end`)
+}
+
+func TestFuncCallStat(t *testing.T) {
+	testStat(t, `print()`)
+	testStat(t, `print(i)`)
+	testStat2(t, `print("hello!")`, `print('hello!')`)
+	testStat2(t, `fact(n-1)`, `fact((n - 1))`)
+	testStat(t, `t:f()`)
+	testStat2(t, `assert((4 and 5) == 5)`, `assert((5 == 5))`) // 4 is false => 5
+	testStat2(t, `assert((4 & 5) == 4)`, `assert((4 == 4))`)
+}
+
+func TestStatAssignStat(t *testing.T) {
+	testStat(t, `x = 42`)
+	testStat(t, `a = x`)
+	testStat2(t, `f().a = 1`, `f()['a'] = 1`)
+	testStat2(t, `a = io.read('*n')`, `a = io['read']('*n')`)
+	testStat2(t, `foo, bar = 3.14, 42`, `foo, bar = 3.140000, 42`)
+	testStat(t, `local x = 42`)
+	testStat2(t, `local f = function() end`, `local f = function()  end`)
+	testStat2(t, `function f() return 1 end`, `f = function() return 1 end`)
+}
+
+func TestBlock(t *testing.T) {
+	testBlock(t, `return`)
+	testBlock(t, `return 1`)
+	testBlock2(t, `return n * fact(n-1)`, `return (n * fact((n - 1)))`)
+}
+
+func TestFuncDefStat(t *testing.T) {
+	testStat2(t, `function f() end`, `f = function()  end`)
+	testStat2(t, `function f(a) end`, `f = function(a)  end`)
+	testStat2(t, `function f(a, b) end`, `f = function(a, b)  end`)
+	testStat2(t, `function f(a, b, ...) end`, `f = function(a, b, ...)  end`)
+	testStat2(t, `function t.a.b.c.f() end`, `t['a']['b']['c']['f'] = function()  end`)
+	testStat2(t, `function t.a.b.c:f() end`, `t['a']['b']['c']['f'] = function(self)  end`)
+	testStat2(t, `local function f(a) end`, `local function f(a)  end`)
+}
+
+func TestError(t *testing.T) {
+	testError(t, `f()   = 1`, `string:1: syntax error near '='`)
+	testError(t, `a,f() = 1`, `string:1: syntax error near '='`)
+	testError(t, `(a)   = 1`, `string:1: syntax error near '='`)
+	testError(t, `(a+b) = 1`, `string:1: syntax error near '='`)
+	testError(t, `(a.b) = 1`, `string:1: syntax error near '='`)
+	testError(t, `a + b = 1`, `string:1: syntax error near '+'`)
+	testError(t, `f(,)`, `string:1: syntax error near ','`)
+}
+
+func testStat(t *testing.T, want string) {
+	stat := parseStat(lexer.NewLexer(want, "string"))
+	got := statToString(stat)
+	if want != got {
+		t.Errorf("want='%s', got='%s'", want, got)
+	}
+}
+
+func testStat2(t *testing.T, src, want string) {
+	stat := parseStat(lexer.NewLexer(src, "string"))
+	got := statToString(stat)
+	if want != got {
+		t.Errorf("want='%s', got='%s'", want, got)
+	}
+}
+
+func testBlock(t *testing.T, want string) {
+	block := parseBlock(lexer.NewLexer(want, "string"))
+	got := blockToString(block)
+	if want != got {
+		t.Errorf("want='%s', got='%s'", want, got)
+	}
+}
+
+func testBlock2(t *testing.T, src, want string) {
+	block := parseBlock(lexer.NewLexer(src, "string"))
+	got := blockToString(block)
+	if want != got {
+		t.Errorf("want='%s', got='%s'", want, got)
+	}
+}
+
+func testError(t *testing.T, src, want string) {
+	got := getError(src)
+	if want != got {
+		t.Errorf("want='%s', got='%s'", want, got)
+	}
+}
+
+func getError(src string) (err string) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = r.(string)
+		}
+	}()
+
+	parseBlock(lexer.NewLexer(src, "string"))
+	return
 }
