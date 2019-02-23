@@ -34,6 +34,7 @@ type FuncCallStat = FuncCallExp
 
 // LabelStat is `::` statement
 type LabelStat struct {
+	Line int
 	Name string
 }
 
@@ -44,6 +45,7 @@ type BreakStat struct {
 
 // GotoStat is `goto name` statement
 type GotoStat struct {
+	Line int
 	Name string
 }
 

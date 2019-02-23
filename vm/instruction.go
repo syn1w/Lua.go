@@ -5,9 +5,10 @@ import "vczn/luago/api"
 // Instruction is Lua instruction code
 type Instruction uint32
 
+// bx and sbx max value
 const (
-	maxArgBx  = 1<<18 - 1     // 2^18-1 = 262143
-	maxArgSBx = maxArgBx >> 1 // 262143 >> 1 = 131071
+	MaxArgBx  = 1<<18 - 1     // 2^18-1 = 262143
+	MaxArgSBx = MaxArgBx >> 1 // 262143 >> 1 = 131071
 )
 
 // Opcode extracts opcode from instruction
@@ -26,7 +27,7 @@ func (inst Instruction) ABC() (a, b, c int) {
 // ABx extracts A, Bx operands from instruction
 func (inst Instruction) ABx() (a, bx int) {
 	//  Bx 0               131071              1<<18-1
-	// sBx -131071           0               (1<<18-1)<<1
+	// sBx -131071           0               (1<<18-1)>>1
 	//     |-----------------|---------------------|
 
 	a = int((inst >> 6) & 0xFF)
@@ -37,7 +38,7 @@ func (inst Instruction) ABx() (a, bx int) {
 // AsBx extracts A, sBx operands from instruction
 func (inst Instruction) AsBx() (a, sBx int) {
 	a, bx := inst.ABx()
-	sBx = bx - maxArgSBx
+	sBx = bx - MaxArgSBx
 	return
 }
 

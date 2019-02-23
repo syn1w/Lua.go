@@ -103,7 +103,7 @@ var opcodes = []opcode{
 	//     T  A  B       C       mode        name        action
 	opcode{0, 1, OpArgR, OpArgN, IABC /* */, "MOVE    ", move},        // A B,   R(A) = R(B)
 	opcode{0, 1, OpArgK, OpArgN, IABx /* */, "LOADK   ", loadk},       // A Bx,  R(A) = Kst(Bx), K is constant
-	opcode{0, 1, OpArgN, OpArgN, IABx /* */, "LOADKX  ", loadkx},      // A, 	R(A) := Kst(extra arg)
+	opcode{0, 1, OpArgN, OpArgN, IABx /* */, "LOADKX  ", loadkx},      // A, 	 R(A) := Kst(extra arg)
 	opcode{0, 1, OpArgU, OpArgU, IABC /* */, "LOADBOOL", loadBool},    // A B C, R(A) := (Bool)B; if (C) pc++
 	opcode{0, 1, OpArgU, OpArgN, IABC /* */, "LOADNIL ", loadNil},     // A B,   R(A), R(A+1), ..., R(A+B) := nil
 	opcode{0, 1, OpArgU, OpArgN, IABC /* */, "GETUPVAL", getUpval},    // A B,   R(A) := UpValue[B]

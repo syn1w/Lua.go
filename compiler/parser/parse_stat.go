@@ -42,11 +42,10 @@ func parseEmptyStat(lex *lexer.Lexer) *ast.EmptyStat {
 
 // :: Name ::
 func parseLabelStat(lex *lexer.Lexer) *ast.LabelStat {
-	lex.AssertNextTokenKind(lexer.TokenSepLabel)              // `::`
-	_, name := lex.AssertNextTokenKind(lexer.TokenIdentifier) // Name
-	lex.AssertNextTokenKind(lexer.TokenSepLabel)              // `::`
-
-	return &ast.LabelStat{Name: name}
+	lex.AssertNextTokenKind(lexer.TokenSepLabel)                 // `::`
+	line, name := lex.AssertNextTokenKind(lexer.TokenIdentifier) // Name
+	lex.AssertNextTokenKind(lexer.TokenSepLabel)                 // `::`
+	return &ast.LabelStat{Line: line, Name: name}
 }
 
 // break
@@ -57,9 +56,9 @@ func parseBreakStat(lex *lexer.Lexer) *ast.BreakStat {
 
 // goto Name
 func parseGotoStat(lex *lexer.Lexer) *ast.GotoStat {
-	lex.AssertNextTokenKind(lexer.TokenKwGoto)                // `goto`
-	_, name := lex.AssertNextTokenKind(lexer.TokenIdentifier) // Name
-	return &ast.GotoStat{Name: name}
+	lex.AssertNextTokenKind(lexer.TokenKwGoto)                   // `goto`
+	line, name := lex.AssertNextTokenKind(lexer.TokenIdentifier) // Name
+	return &ast.GotoStat{Line: line, Name: name}
 }
 
 // do block end
