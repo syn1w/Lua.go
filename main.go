@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"luago/api"
 	"luago/binchunk"
 	"luago/compiler/lexer"
@@ -27,17 +28,6 @@ import (
 
 // chunk 内部
 // 指令表、常量表、子函数原型等信息都是 list 存储的.
-
-func undumpLuaBinChunk() {
-	if len(os.Args) > 1 {
-		data, err := ioutil.ReadFile(os.Args[1])
-		if err != nil {
-			panic(err)
-		}
-		proto := binchunk.Undump(data)
-		list(proto)
-	}
-}
 
 func list(proto *binchunk.ProtoType) {
 	printHeader(proto)
@@ -177,56 +167,55 @@ func print(ls api.ILuaState) int {
 	return 0
 }
 
-// func testChunkDump() {
-// 	// if len(os.Args) < 2 {
-// 	// 	log.Fatalln("Usage binchunk <outfiles...>")
-// 	// }
-// 	// data, err := ioutil.ReadFile(os.Args[1])
-// 	data, err := ioutil.ReadFile("luac.out")
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	proto := binchunk.Undump(data)
-// 	list(proto)
-// }
+func testChunkDump() {
+	if len(os.Args) < 2 {
+		log.Fatalln("Usage binchunk <outfiles...>")
+	}
+	data, err := ioutil.ReadFile(os.Args[1])
+	if err != nil {
+		panic(err)
+	}
+	proto := binchunk.Undump(data)
+	list(proto)
+}
 
-// func testState() {
-// 	ls := state.NewLuaState(20, nil)
-// 	ls.PushInteger(1)
-// 	ls.PushString("2.0")
-// 	ls.PushString("3.0")
-// 	ls.PushNumber(4.0)
-// 	printStack(ls)
+func testState() {
+	ls := state.NewLuaState()
+	ls.PushInteger(1)
+	ls.PushString("2.0")
+	ls.PushString("3.0")
+	ls.PushNumber(4.0)
+	printStack(ls)
 
-// 	ls.Arithmetic(api.LuaOpAdd)
-// 	printStack(ls)
-// 	ls.Arithmetic(api.LuaOpBNot)
-// 	printStack(ls)
-// 	ls.Len(2)
-// 	printStack(ls)
-// 	ls.Concat(3)
-// 	printStack(ls)
-// 	ls.PushBoolean(ls.Compare(1, 2, api.LuaOpEq))
-// 	printStack(ls)
-// }
+	ls.Arithmetic(api.LuaOpAdd)
+	printStack(ls)
+	ls.Arithmetic(api.LuaOpBNot)
+	printStack(ls)
+	ls.Len(2)
+	printStack(ls)
+	ls.Concat(3)
+	printStack(ls)
+	ls.PushBoolean(ls.Compare(1, 2, api.LuaOpEq))
+	printStack(ls)
+}
 
-// func printStack(ls *state.LuaState) {
-// 	top := ls.GetTop()
-// 	for i := 1; i <= top; i++ {
-// 		t := ls.Type(i)
-// 		switch t {
-// 		case api.LuaTBoolean:
-// 			fmt.Printf("[%t]", ls.ToBoolean(i))
-// 		case api.LuaTNumber:
-// 			fmt.Printf("[%g]", ls.ToNumber(i))
-// 		case api.LuaTString:
-// 			fmt.Printf("[%q]", ls.ToString(i))
-// 		default: // other values
-// 			fmt.Printf("[%s]", ls.TypeName(t))
-// 		}
-// 	}
-// 	fmt.Println()
-// }
+func printStack(ls *state.LuaState) {
+	top := ls.GetTop()
+	for i := 1; i <= top; i++ {
+		t := ls.Type(i)
+		switch t {
+		case api.LuaTBoolean:
+			fmt.Printf("[%t]", ls.ToBoolean(i))
+		case api.LuaTNumber:
+			fmt.Printf("[%g]", ls.ToNumber(i))
+		case api.LuaTString:
+			fmt.Printf("[%q]", ls.ToString(i))
+		default: // other values
+			fmt.Printf("[%s]", ls.TypeName(t))
+		}
+	}
+	fmt.Println()
+}
 
 // func luaMain(proto *binchunk.ProtoType) {
 // 	nRegs := int(proto.MaxStackSize)
@@ -360,7 +349,8 @@ func testParse() {
 }
 
 func main() {
-	undumpLuaBinChunk()
+	//testChunkDump()
+	testState()
 	// testVM()
 	// testFunction()
 	// testParse()
