@@ -28,7 +28,7 @@ import (
 // chunk 内部
 // 指令表、常量表、子函数原型等信息都是 list 存储的.
 
-func testCh02Main() {
+func undumpLuaBinChunk() {
 	if len(os.Args) > 1 {
 		data, err := ioutil.ReadFile(os.Args[1])
 		if err != nil {
@@ -360,7 +360,7 @@ func testParse() {
 }
 
 func main() {
-	testCh02Main()
+	undumpLuaBinChunk()
 	// testVM()
 	// testFunction()
 	// testParse()
