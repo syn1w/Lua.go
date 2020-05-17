@@ -1,6 +1,6 @@
 package state
 
-import "vczn/luago/api"
+import "luago/api"
 
 // LuaState impl api.ILuaState
 type LuaState struct {

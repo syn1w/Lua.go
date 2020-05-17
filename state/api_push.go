@@ -1,8 +1,6 @@
 package state
 
-import (
-	"vczn/luago/api"
-)
+import "luago/api"
 
 // ------------------------------------
 //      push methods(go -> stack)

@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"vczn/luago/api"
-	"vczn/luago/binchunk"
-	"vczn/luago/compiler/lexer"
-	"vczn/luago/compiler/parser"
-	"vczn/luago/state"
-	"vczn/luago/vm"
+	"luago/api"
+	"luago/binchunk"
+	"luago/compiler/lexer"
+	"luago/compiler/parser"
+	"luago/state"
+	"luago/vm"
 )
 
 // luatype      golangtype

@@ -1,6 +1,6 @@
 package vm
 
-import "vczn/luago/api"
+import "luago/api"
 
 // move A B | R(A) := R(B)
 func move(inst Instruction, vm api.ILuaVM) {

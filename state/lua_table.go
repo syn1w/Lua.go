@@ -1,8 +1,8 @@
 package state
 
 import (
+	"luago/number"
 	"math"
-	"vczn/luago/number"
 )
 
 // LuaTable { key = value }, key is not nil or NaN

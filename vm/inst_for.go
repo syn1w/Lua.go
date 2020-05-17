@@ -1,6 +1,6 @@
 package vm
 
-import "vczn/luago/api"
+import "luago/api"
 
 // forloop A sBx | for numerical
 // for index, limit, step ...

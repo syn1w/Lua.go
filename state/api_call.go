@@ -1,9 +1,9 @@
 package state
 
 import (
-	"vczn/luago/api"
-	"vczn/luago/binchunk"
-	"vczn/luago/vm"
+	"luago/api"
+	"luago/binchunk"
+	"luago/vm"
 )
 
 // Load chunk from binary or text file(compile)

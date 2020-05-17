@@ -2,8 +2,8 @@ package state
 
 import (
 	"fmt"
-	"vczn/luago/api"
-	"vczn/luago/number"
+	"luago/api"
+	"luago/number"
 )
 
 // LuaValue is the type of Lua value

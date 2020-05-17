@@ -1,9 +1,9 @@
 package parser
 
 import (
-	"vczn/luago/compiler/ast"
-	"vczn/luago/compiler/lexer"
-	"vczn/luago/number"
+	"luago/compiler/ast"
+	"luago/compiler/lexer"
+	"luago/number"
 )
 
 // sort by priority

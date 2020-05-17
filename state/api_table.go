@@ -1,6 +1,6 @@
 package state
 
-import "vczn/luago/api"
+import "luago/api"
 
 // NewTable pushes a empty lua table
 func (s *LuaState) NewTable() {

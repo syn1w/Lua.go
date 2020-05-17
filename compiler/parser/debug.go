@@ -2,8 +2,8 @@ package parser
 
 import (
 	"fmt"
-	"vczn/luago/compiler/ast"
-	"vczn/luago/compiler/lexer"
+	"luago/compiler/ast"
+	"luago/compiler/lexer"
 )
 
 func expToString(exp ast.Exp) string {

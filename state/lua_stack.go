@@ -1,8 +1,6 @@
 package state
 
-import (
-	"vczn/luago/api"
-)
+import "luago/api"
 
 //     +-------+
 //     |       | 6 invalid  5  <-top

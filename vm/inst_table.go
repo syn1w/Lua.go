@@ -1,6 +1,6 @@
 package vm
 
-import "vczn/luago/api"
+import "luago/api"
 
 // R(A) := {} (size = B, C)
 func newTable(inst Instruction, vm api.ILuaVM) {

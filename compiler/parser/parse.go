@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"vczn/luago/compiler/ast"
-	"vczn/luago/compiler/lexer"
+	"luago/compiler/ast"
+	"luago/compiler/lexer"
 )
 
 // Parse lua string to lua chunk

@@ -1,6 +1,6 @@
 package vm
 
-import "vczn/luago/api"
+import "luago/api"
 
 // R(A) := RK(B) op RK(C)
 func binaryArith(inst Instruction, vm api.ILuaVM, op api.ArithmeticOp) {

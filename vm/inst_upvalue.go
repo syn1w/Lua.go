@@ -1,8 +1,6 @@
 package vm
 
-import (
-	"vczn/luago/api"
-)
+import "luago/api"
 
 // getUpval A B | R(A) := UpValue[B]
 // local a, b

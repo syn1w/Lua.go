@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"vczn/luago/compiler/ast"
-	"vczn/luago/compiler/lexer"
+	"luago/compiler/ast"
+	"luago/compiler/lexer"
 )
 
 func parseBlock(lex *lexer.Lexer) *ast.Block {

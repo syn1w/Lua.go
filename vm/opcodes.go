@@ -1,6 +1,6 @@
 package vm
 
-import "vczn/luago/api"
+import "luago/api"
 
 // reference:
 // https://github.com/zxh0/lua.go

@@ -1,6 +1,6 @@
 package state
 
-import "vczn/luago/api"
+import "luago/api"
 
 // PushGlobalTable pushes the global table into stack
 func (s *LuaState) PushGlobalTable() {

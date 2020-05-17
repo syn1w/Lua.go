@@ -1,6 +1,6 @@
 package vm
 
-import "vczn/luago/api"
+import "luago/api"
 
 // loadnil A B | R(A), R(A+1), ..., R(A+B) := nil
 func loadNil(inst Instruction, vm api.ILuaVM) {

@@ -1,8 +1,8 @@
 package state
 
 import (
-	"vczn/luago/api"
-	"vczn/luago/binchunk"
+	"luago/api"
+	"luago/binchunk"
 )
 
 type luaClosure struct {

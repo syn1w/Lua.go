@@ -1,7 +1,7 @@
 package vm
 
 import (
-	"vczn/luago/api"
+	"luago/api"
 )
 
 // closure, instantiate a subfuntion prototype as a closure

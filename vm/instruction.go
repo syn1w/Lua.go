@@ -1,6 +1,6 @@
 package vm
 
-import "vczn/luago/api"
+import "luago/api"
 
 // Instruction is Lua instruction code
 type Instruction uint32

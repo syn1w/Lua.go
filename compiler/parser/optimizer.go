@@ -1,10 +1,10 @@
 package parser
 
 import (
+	"luago/compiler/ast"
+	"luago/compiler/lexer"
+	"luago/number"
 	"math"
-	"vczn/luago/compiler/ast"
-	"vczn/luago/compiler/lexer"
-	"vczn/luago/number"
 )
 
 func optimizeLogicalOr(exp *ast.BinOpExp) ast.Exp {

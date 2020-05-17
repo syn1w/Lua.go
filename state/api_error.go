@@ -1,7 +1,7 @@
 package state
 
 import (
-	"vczn/luago/api"
+	"luago/api"
 )
 
 func (s *LuaState) Error() int {
