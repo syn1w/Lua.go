@@ -10,6 +10,7 @@ import (
 	"luago/compiler/parser"
 	"luago/state"
 	"luago/vm"
+	"os"
 )
 
 // luatype      golangtype
@@ -26,6 +27,17 @@ import (
 
 // chunk 内部
 // 指令表、常量表、子函数原型等信息都是 list 存储的.
+
+func testCh02Main() {
+	if len(os.Args) > 1 {
+		data, err := ioutil.ReadFile(os.Args[1])
+		if err != nil {
+			panic(err)
+		}
+		proto := binchunk.Undump(data)
+		list(proto)
+	}
+}
 
 func list(proto *binchunk.ProtoType) {
 	printHeader(proto)
@@ -348,7 +360,8 @@ func testParse() {
 }
 
 func main() {
+	testCh02Main()
 	// testVM()
 	// testFunction()
-	testParse()
+	// testParse()
 }

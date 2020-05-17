@@ -104,7 +104,7 @@ type Upvalue struct {
 // 00 00 00 00   number of prototypes(subfunction)
 
 // lineInfo
-// 行号和指令表中的指令一一对应，分别记录每条在源代码中对应的 lineno
+// 行号和指令表中的指令一一对应，分别记录每条指令在源代码中对应的 lineno
 // 04 00 00 00    number of lineinfos
 // 01 00 00 00 -> line 1, 00 00 04 00 00 00
 // 01 00 00 00 -> line 1
